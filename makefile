@@ -5,7 +5,7 @@ empty:
 
 .PHONY: chrome
 chrome:
-	google-chrome --pack-extension=./chrome --pack-extension-key=./chrome-browserpass.pem
+	google-chrome --pack-extension=./chrome --pack-extension-key=./chrome.pem
 	mv chrome.crx chrome-browserpass.crx
 
 .PHONY: firefox

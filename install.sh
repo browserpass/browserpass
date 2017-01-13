@@ -69,10 +69,10 @@ mkdir -p "$TARGET_DIR"
 
 if [ "$BROWSER" == "1" ] || [ "$BROWSER" == "2" ]; then
   echo "Installing Chrome / Chromium host config"
-  cp "$DIR/chrome/host.json" "$TARGET_DIR/$APP_NAME.json"
+  cp "$DIR/chrome-host.json" "$TARGET_DIR/$APP_NAME.json"
 else
   echo "Installing Firefox host config"
-  cp "$DIR/firefox/host.json" "$TARGET_DIR_FIREFOX/$APP_NAME.json"
+  cp "$DIR/firefox-host.json" "$TARGET_DIR_FIREFOX/$APP_NAME.json"
 fi
 
 # Replace path to host
