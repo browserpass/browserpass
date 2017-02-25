@@ -84,11 +84,11 @@ mkdir -p "$TARGET_DIR"
 
 # Copy manifest host config file
 if [ "$BROWSER" == "1" ] || [ "$BROWSER" == "2" ] || [ "$BROWSER" == "4" ]; then
-  cp "$DIR/chrome-host.json" "$TARGET_DIR/$APP_NAME.json"
+  cp "$DIR/chrome/host.json" "$TARGET_DIR/$APP_NAME.json"
 	mkdir -p "$TARGET_DIR"/../policies/managed/
-	cp "$DIR/chrome-policy.json" "$TARGET_DIR"/../policies/managed/"$APP_NAME.json"
+	cp "$DIR/chrome/policy.json" "$TARGET_DIR"/../policies/managed/"$APP_NAME.json"
 else
-  cp "$DIR/firefox-host.json" "$TARGET_DIR_FIREFOX/$APP_NAME.json"
+  cp "$DIR/firefox/host.json" "$TARGET_DIR_FIREFOX/$APP_NAME.json"
 fi
 
 # Replace path to host
