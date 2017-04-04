@@ -46,7 +46,16 @@ func (s *diskStore) Search(query string) ([]string, error) {
 		return nil, err
 	}
 
-	items := append(matches, matches2...)
+        hostParts := strings.Split(query, ".")
+        matches3 := []string{}
+        if( len(hostParts) > 2 ) {
+        matches3, err = zglob.Glob(s.path + "/**/*." + hostParts[1] + "." + hostParts[2] + "*.gpg")
+		if err != nil {
+			return nil, err
+		}
+        } 
+        
+	items := append(append(matches, matches2...), matches3...)
 	for i, path := range items {
 		item, err := filepath.Rel(s.path, path)
 		if err != nil {
