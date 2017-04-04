@@ -41,7 +41,7 @@ func (s *diskStore) Search(query string) ([]string, error) {
 		return nil, err
 	}
 
-	matches2, err := zglob.Glob(s.path + "/**/" + query + "*.gpg")
+	matches2, err := zglob.Glob(s.path + "/**/*" + query + "*.gpg")
 	if err != nil {
 		return nil, err
 	}
