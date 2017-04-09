@@ -3,8 +3,8 @@ package pass
 import (
 	"errors"
 	"io"
-	"path/filepath"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/mattn/go-zglob"
@@ -42,7 +42,7 @@ func (s *diskStore) Search(query string) ([]string, error) {
 	}
 
 	partials := make([]string, count)
-	for i:=0; i < count; i++ {
+	for i := 0; i < count; i++ {
 		partials[i] = query
 		j := strings.Index(query, ".")
 		if j >= 0 {
