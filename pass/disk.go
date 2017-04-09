@@ -34,14 +34,30 @@ func defaultStorePath() (string, error) {
 }
 
 func (s *diskStore) Search(query string) ([]string, error) {
+	// Number of prefix matches to be checked is the number of periods
+	// with lower bound of 1
+	count := strings.Count(query, ".")
+	if count < 1 {
+		count = 1
+	}
+
+	partials := make([]string, count)
+	for i:=0; i < count; i++ {
+		partials[i] = query
+		j := strings.Index(query, ".")
+		if j >= 0 {
+			query = query[j+1:]
+		}
+	}
+
 	// First, search for DOMAIN/USERNAME.gpg
 	// Then, search for DOMAIN.gpg
-	matches, err := zglob.Glob(s.path + "/**/" + query + "*/*.gpg")
+	matches, err := zglob.Glob(s.path + "/**/*" + partials[count-1] + "*/*.gpg")
 	if err != nil {
 		return nil, err
 	}
 
-	matches2, err := zglob.Glob(s.path + "/**/" + query + "*.gpg")
+	matches2, err := zglob.Glob(s.path + "/**/*" + partials[count-1] + "*.gpg")
 	if err != nil {
 		return nil, err
 	}
@@ -53,6 +69,18 @@ func (s *diskStore) Search(query string) ([]string, error) {
 			return nil, err
 		}
 		items[i] = strings.TrimSuffix(item, ".gpg")
+	}
+
+	for _, partial := range partials {
+		ret := []string{}
+		for _, item := range items {
+			if strings.HasPrefix(item, partial) {
+				ret = append(ret, item)
+			}
+		}
+		if len(ret) > 0 {
+			return ret, nil
+		}
 	}
 
 	return items, nil
