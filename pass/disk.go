@@ -34,16 +34,37 @@ func defaultStorePath() (string, error) {
 }
 
 func (s *diskStore) Search(query string) ([]string, error) {
-	// First, search for DOMAIN/USERNAME.gpg
-	// Then, search for DOMAIN.gpg
-	matches, err := zglob.Glob(s.path + "/**/" + query + "*/*.gpg")
-	if err != nil {
-		return nil, err
-	}
+	var matches, matches2 []string
+	var err error
 
-	matches2, err := zglob.Glob(s.path + "/**/" + query + "*.gpg")
-	if err != nil {
-		return nil, err
+	for {
+		// First, search for DOMAIN/USERNAME.gpg
+		// Then, search for DOMAIN.gpg
+		matches, err = zglob.Glob(s.path + "/**/" + query + "*/*.gpg")
+		if err != nil {
+			return nil, err
+		}
+
+		matches2, err = zglob.Glob(s.path + "/**/" + query + "*.gpg")
+		if err != nil {
+			return nil, err
+		}
+
+		// Exit loop if some results were found
+		if len(matches) > 0 || len(matches2) > 0 {
+			break
+		}
+
+		// Remove component from query for next iteration
+		i := strings.Index(query, ".")
+		if i >= 0 {
+			query = query[i+1:len(query)]
+		}
+
+		// Exit loop if we are at tld
+		if strings.Index(query, ".") == -1 {
+			break
+		}
 	}
 
 	items := append(matches, matches2...)
