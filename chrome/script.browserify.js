@@ -175,7 +175,7 @@ function fillLoginForm(login) {
     update(field('input[type=password]'), ${JSON.stringify(login.p)});
     update(field('input[type=email], input[type=text]'), ${JSON.stringify(login.u)});
 
-    var password_inputs = document.querySelectorAll('input[type=password]');
+    var password_inputs = form().querySelectorAll('input[type=password]');
     if (password_inputs.length > 1) {
       password_inputs[1].select();
     } else {
