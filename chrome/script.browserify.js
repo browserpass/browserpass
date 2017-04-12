@@ -150,7 +150,10 @@ function fillLoginForm(login) {
   var code = `
   (function(d) {
     function form() {
-      return d.querySelector('input[type=password]').form || document.createElement('form');
+      var elems = d.querySelectorAll('input[type=password]');
+      for (var el of elems)
+        if (el.form.offsetParent !== null) return el.form;
+      return document.createElement('form');
     }
 
     function field(selector) {
