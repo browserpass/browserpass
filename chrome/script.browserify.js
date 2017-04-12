@@ -173,7 +173,7 @@ function fillLoginForm(login) {
     }
 
     update(field('input[type=password]'), ${JSON.stringify(login.p)});
-    update(field('input[type=email], input[type=text]'), ${JSON.stringify(login.u)});
+    update(field('input[type=email], input[type=text], input[name=email]'), ${JSON.stringify(login.u)});
 
     var password_inputs = document.querySelectorAll('input[type=password]');
     if (password_inputs.length > 1) {
