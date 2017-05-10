@@ -137,6 +137,9 @@ function getLoginData() {
 
     searching = false;
     fillLoginForm(response);
+    if (response.digits !== "") {
+      alert(response.digits)
+    }
   });
 }
 

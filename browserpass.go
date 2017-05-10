@@ -13,12 +13,15 @@ import (
 	"strings"
 
 	"github.com/dannyvankooten/browserpass/pass"
+	"github.com/gokyle/twofactor"
 )
 
 // Login represents a single pass login.
 type Login struct {
-	Username string `json:"u"`
-	Password string `json:"p"`
+	Username  string `json:"u"`
+	Password  string `json:"p"`
+	OTP       string `json:"digits"`
+	otpSecret string
 }
 
 var endianness = binary.LittleEndian
@@ -126,12 +129,29 @@ func readLoginGPG(r io.Reader) (*Login, error) {
 	if err != nil {
 		return nil, err
 	}
-	rc.Close()
+
+	defer rc.Close()
 
 	if err := cmd.Wait(); err != nil {
 		return nil, errors.New(err.Error() + "\n" + errbuf.String())
 	}
 	return login, nil
+}
+
+func parseTotp(str string, l *Login) error {
+	re := regexp.MustCompile("(?i)^(totp|otp):")
+	replaced := re.ReplaceAllString(str, "")
+	if len(replaced) != len(str) {
+		secret := strings.TrimSpace(replaced)
+		o, err := twofactor.NewGoogleTOTP(secret)
+		if err != nil {
+			return err
+		}
+		l.OTP = o.OTP()
+		l.otpSecret = secret
+	}
+
+	return nil
 }
 
 // parseLogin parses a login and a password from a decrypted password file.
@@ -148,6 +168,10 @@ func parseLogin(r io.Reader) (*Login, error) {
 	re := regexp.MustCompile("(?i)^(login|username|user):")
 	for scanner.Scan() {
 		line := scanner.Text()
+		err := parseTotp(line, login)
+		if err != nil {
+			return nil, err
+		}
 		replaced := re.ReplaceAllString(line, "")
 		if len(replaced) != len(line) {
 			login.Username = strings.TrimSpace(replaced)
