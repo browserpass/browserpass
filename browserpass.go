@@ -56,6 +56,12 @@ func Run(stdin io.Reader, stdout io.Writer, s pass.Store) error {
 				return err
 			}
 			resp = list
+		case "lookup":
+			list, err := s.Lookup(data.Domain)
+			if err != nil {
+				return err
+			}
+			resp = list
 		case "get":
 			rc, err := s.Open(data.Entry)
 			if err != nil {

@@ -72,7 +72,7 @@ function submitSearchForm(e) {
       return;
   }
 
-  searchPassword(this.s.value);
+  searchPassword("search", this.s.value);
 }
 
 function init(tab) {
@@ -87,24 +87,23 @@ function init(tab) {
   });
 
   if( parsedDomain ) {
-    var searchDomain = [parsedDomain.domain, parsedDomain.tld]
-      .filter(function (x) { return x; })
-      .join('.');
+    var searchDomain = [parsedDomain.subdomain, parsedDomain.domain, parsedDomain.tld]
+      .filter(function (x) { return x != "" }).join(".")
 
     if( searchDomain ) {
-      searchPassword(searchDomain);
+      searchPassword("lookup", searchDomain);
     }
   }
 }
 
-function searchPassword(_domain) {
+function searchPassword(_action, _domain) {
   searching = true;
   logins = null;
   domain = _domain;
   urlDuringSearch = activeTab.url;
   m.redraw();
 
-  chrome.runtime.sendNativeMessage(app, { "action": "search", "domain": _domain }, function(response) {
+  chrome.runtime.sendNativeMessage(app, { "action": _action, "domain": _domain }, function(response) {
     if( chrome.runtime.lastError ) {
       console.log(chrome.runtime.lastError);
     }
