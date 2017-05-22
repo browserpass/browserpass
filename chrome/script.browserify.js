@@ -200,8 +200,9 @@ function fillLoginForm(login) {
       return;
     }
 
-    update(field('input[type=password]'), ${JSON.stringify(login.p)});
+    // Order must be : login than password, so that password only page can be completed
     update(field('input[type=email], input[type=text], input:first-of-type'), ${JSON.stringify(login.u)});
+    update(field('input[type=password]'), ${JSON.stringify(login.p)});
 
     var password_inputs = queryAllVisible(form(), 'input[type=password]');
     if (password_inputs.length > 1) {
