@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(onMessage);
 // fill login form & submit
 function fillLoginForm(login) {
   chrome.tabs.executeScript(
-    { code: "var login = " + JSON.stringify(login) + ";" },
+    { code: "var login = " + JSON.stringify(login) + "; var autoSubmit = " + JSON.stringify(localStorage.getItem("autoSubmit")) + ";"},
     function() {
       chrome.tabs.executeScript({ file: "/inject.js", allFrames: true });
     }

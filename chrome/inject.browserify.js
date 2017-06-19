@@ -78,7 +78,7 @@
   );
 
   var password_inputs = queryAllVisible(form(), "input[type=password]");
-  if (password_inputs.length > 1) {
+  if (autoSubmit == 'false' || password_inputs.length > 1) {
     password_inputs[1].select();
   } else {
     window.requestAnimationFrame(function() {

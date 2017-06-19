@@ -5,6 +5,9 @@
   "version": "1.0.7",
   "author": "Danny van Kooten",
   "homepage_url": "https://github.com/dannyvankooten/browserpass",
+  "options_ui": {
+    "page": "options.html",
+  },
   "browser_action": {
     "browser_style": false,
     "default_icon": "icon-lock.png",
@@ -12,7 +15,8 @@
   },
   "permissions": [
     "activeTab",
-    "nativeMessaging"
+    "nativeMessaging",
+    "storage"
   ],
   "commands": {
     "_execute_browser_action": {
