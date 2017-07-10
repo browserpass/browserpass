@@ -11,3 +11,4 @@ firefox/*
 !firefox/manifest.json
 chrome/script.js
 node_modules
+.vagrant/
