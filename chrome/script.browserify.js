@@ -197,14 +197,19 @@ function fillLoginForm(login) {
 	}
 
 	update(field('input[type=password]'), ${JSON.stringify(login.p)});
-	update(field('input[type=email], input[type=text], input:first-of-type'), ${JSON.stringify(login.u)});
+	// Guess username field
+	var usernameFields = field('input[id=username], input[id=user_name], input[id=userid], input[id=user_id], input[id=login], input[id=email]');
+	if (! usernameFields.id) {
+	  usernameFields = field('input[type=email], input[type=text]');
+	}
+	update(usernameFields, ${JSON.stringify(login.u)});
 
 	var password_inputs = queryAllVisible(form(), 'input[type=password]');
 	if (password_inputs.length > 1) {
 	  password_inputs[1].select();
 	} else {
 		window.requestAnimationFrame(function() {
- field('[type=submit]').click(); 
+ field('[type=submit]').click();
 		});
 	 }
   })(document);
