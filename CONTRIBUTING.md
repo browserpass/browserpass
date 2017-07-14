@@ -3,6 +3,7 @@
 You will need Node, [Yarn](https://yarnpkg.com/) and Golang installed.
 
 ## To build
+- `npm install -g browserify`
 - Open `makefile` and, if needed, change `google-chrome` to the appropriate name of your Google Chrome executable (in Linux, it could be google-chrome-stable)
 - Run `make js` to install Node dependencies and generate a JS bundle
 - Run `make release`
