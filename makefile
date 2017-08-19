@@ -1,5 +1,5 @@
 SHELL := /usr/bin/env bash
-CHROME := `which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null`
+CHROME ?= `which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null`
 JS_OUTPUT=chrome/script.js chrome/inject.js
 
 .PHONY: empty
@@ -7,7 +7,7 @@ empty:
 
 .PHONY: chrome
 chrome: js
-	$(CHROME) --pack-extension=./chrome --pack-extension-key=./chrome-browserpass.pem
+	"$(CHROME)" --pack-extension=./chrome --pack-extension-key=./chrome-browserpass.pem
 	mv chrome.crx chrome-browserpass.crx
 
 .PHONY: firefox
