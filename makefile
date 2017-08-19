@@ -1,11 +1,12 @@
 SHELL := /usr/bin/env bash
 CHROME := `which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null`
+JS_OUTPUT=chrome/script.js chrome/inject.js
 
 .PHONY: empty
 empty:
 
 .PHONY: chrome
-chrome:
+chrome: js
 	$(CHROME) --pack-extension=./chrome --pack-extension-key=./chrome-browserpass.pem
 	mv chrome.crx chrome-browserpass.crx
 
@@ -14,8 +15,13 @@ firefox:
 	cp chrome/{*.html,*.css,*.js,*.png,*.svg} firefox/
 
 .PHONY: js
-js: chrome/script.browserify.js
+js: $(JS_OUTPUT)
+
+chrome/script.js: chrome/script.browserify.js
 	browserify chrome/script.browserify.js -o chrome/script.js
+
+chrome/inject.js: chrome/inject.browserify.js
+	browserify chrome/inject.browserify.js -o chrome/inject.js
 
 .PHONY: static-files
 static-files: chrome/host.json firefox/host.json
