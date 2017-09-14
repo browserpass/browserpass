@@ -1,5 +1,6 @@
 SHELL := /usr/bin/env bash
-CHROME ?= `which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null`
+CHROME ?= `which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null || which chromium-browser 2>/dev/null`
+PEM := $(shell find . -maxdepth 1 -name "chrome-browserpass.pem")
 JS_OUTPUT=chrome/script.js chrome/inject.js
 
 .PHONY: empty
@@ -7,7 +8,12 @@ empty:
 
 .PHONY: chrome
 chrome: js
-	"$(CHROME)" --pack-extension=./chrome --pack-extension-key=./chrome-browserpass.pem
+ifeq ($(PEM),./chrome-browserpass.pem)
+	"$(CHROME)" --disable-gpu --pack-extension=./chrome --pack-extension-key=$(PEM)
+else
+	"$(CHROME)" --disable-gpu --pack-extension=./chrome
+	[ -e ./chrome.pem ] && rm -v ./chrome.pem
+endif
 	mv chrome.crx chrome-browserpass.crx
 
 .PHONY: firefox
@@ -41,11 +47,15 @@ browserpass-darwinx64: cmd/browserpass/ pass/ browserpass.go
 browserpass-openbsd64: cmd/browserpass/ pass/ browserpass.go
 	env GOOS=openbsd GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
+browserpass-freebsd64: cmd/browserpass/ pass/ browserpass.go
+	env GOOS=freebsd GOARCH=amd64 go build -o $@ ./cmd/browserpass
+
 .PHONY: static-files chrome firefox
-release: static-files chrome firefox browserpass-linux64 browserpass-darwinx64 browserpass-openbsd64
+release: static-files chrome firefox browserpass-linux64 browserpass-darwinx64 browserpass-openbsd64 browserpass-freebsd64
 	mkdir -p release
 	zip -jFS "release/chrome" chrome/* chrome-browserpass.crx
 	zip -jFS "release/firefox" firefox/*
 	zip -FS "release/browserpass-linux64" browserpass-linux64 *-host.json chrome-browserpass.crx install.sh chrome-policy.json README.md LICENSE
 	zip -FS "release/browserpass-darwinx64" browserpass-darwinx64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
 	zip -FS "release/browserpass-openbsd64" browserpass-openbsd64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
+	zip -FS "release/browserpass-freebsd64" browserpass-freebsd64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE

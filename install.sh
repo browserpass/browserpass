@@ -9,20 +9,10 @@ HOST_FILE="$DIR/browserpass"
 # Find target dirs for various browsers & OS'es
 # https://developer.chrome.com/extensions/nativeMessaging#native-messaging-host-location
 # https://wiki.mozilla.org/WebExtensions/Native_Messaging
-if [ $(uname -s) == 'Darwin' ]; then
-  HOST_FILE="$DIR/browserpass-darwinx64"
-  if [ "$(whoami)" == "root" ]; then
-    TARGET_DIR_CHROME="/Library/Google/Chrome/NativeMessagingHosts"
-    TARGET_DIR_CHROMIUM="/Library/Application Support/Chromium/NativeMessagingHosts"
-    TARGET_DIR_FIREFOX="/Library/Application Support/Mozilla/NativeMessagingHosts"
-    TARGET_DIR_VIVALDI="/Library/Application Support/Vivaldi/NativeMessagingHosts"
-  else
-    TARGET_DIR_CHROME="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
-    TARGET_DIR_CHROMIUM="$HOME/Library/Application Support/Chromium/NativeMessagingHosts"
-    TARGET_DIR_FIREFOX="$HOME/Library/Application Support/Mozilla/NativeMessagingHosts"
-    TARGET_DIR_VIVALDI="$HOME/Library/Application Support/Vivaldi/NativeMessagingHosts"
-  fi
-else
+OPERATING_SYSTEM=$(uname -s)
+
+case $OPERATING_SYSTEM in
+Linux)
   HOST_FILE="$DIR/browserpass-linux64"
   if [ "$(whoami)" == "root" ]; then
     TARGET_DIR_CHROME="/etc/opt/chrome/native-messaging-hosts"
@@ -35,23 +25,53 @@ else
     TARGET_DIR_FIREFOX="$HOME/.mozilla/native-messaging-hosts"
     TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
   fi
-fi
-
-if [ $(uname -s) == 'OpenBSD' ]; then
+  ;;
+Darwin)
+  HOST_FILE="$DIR/browserpass-darwinx64"
+  if [ "$(whoami)" == "root" ]; then
+    TARGET_DIR_CHROME="/Library/Google/Chrome/NativeMessagingHosts"
+    TARGET_DIR_CHROMIUM="/Library/Application Support/Chromium/NativeMessagingHosts"
+    TARGET_DIR_FIREFOX="/Library/Application Support/Mozilla/NativeMessagingHosts"
+    TARGET_DIR_VIVALDI="/Library/Application Support/Vivaldi/NativeMessagingHosts"
+  else
+    TARGET_DIR_CHROME="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
+    TARGET_DIR_CHROMIUM="$HOME/Library/Application Support/Chromium/NativeMessagingHosts"
+    TARGET_DIR_FIREFOX="$HOME/Library/Application Support/Mozilla/NativeMessagingHosts"
+    TARGET_DIR_VIVALDI="$HOME/Library/Application Support/Vivaldi/NativeMessagingHosts"
+  fi
+  ;;
+OpenBSD)
   HOST_FILE="$DIR/browserpass-openbsd64"
+  if [ "$(whoami)" == "root" ]; then
+    echo "Installing as root not supported."
+    exit 1
+  fi
   TARGET_DIR_CHROME="$HOME/.config/google-chrome/NativeMessagingHosts"
   TARGET_DIR_CHROMIUM="$HOME/.config/chromium/NativeMessagingHosts"
   TARGET_DIR_FIREFOX="$HOME/.mozilla/native-messaging-hosts"
   TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
-fi
+  ;;
+FreeBSD)
+  HOST_FILE="$DIR/browserpass-freebsd64"
+  if [ "$(whoami)" == "root" ]; then
+    echo "Installing as root not supported"
+    exit 1
+  fi
+  TARGET_DIR_CHROME="$HOME/.config/google-chrome/NativeMessagingHosts"
+  TARGET_DIR_CHROMIUM="$HOME/.config/chromium/NativeMessagingHosts"
+  TARGET_DIR_FIREFOX="$HOME/.mozilla/native-messaging-hosts"
+  TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
+  ;;
+*)
+  echo "$OPERATING_SYSTEM is not supported"
+  exit 1
+  ;;
+esac
 
 if [ -e "$DIR/browserpass" ]; then
   echo "Detected development binary"
   HOST_FILE="$DIR/browserpass"
 fi
-
-# Escape host file
-ESCAPED_HOST_FILE=${HOST_FILE////\\/}
 
 echo ""
 echo "Select your browser:"
@@ -65,38 +85,46 @@ read BROWSER
 echo ""
 
 # Set target dir from user input
-if [[ "$BROWSER" == "1" ]]; then
+case $BROWSER in
+1)
   BROWSER_NAME="Chrome"
   TARGET_DIR="$TARGET_DIR_CHROME"
-fi
-
-if [[ "$BROWSER" == "2" ]]; then
+  ;;
+2)
   BROWSER_NAME="Chromium"
   TARGET_DIR="$TARGET_DIR_CHROMIUM"
-fi
-
-if [[ "$BROWSER" == "3" ]]; then
+  ;;
+3)
   BROWSER_NAME="Firefox"
   TARGET_DIR="$TARGET_DIR_FIREFOX"
-fi
-
-if [[ "$BROWSER" == "4" ]]; then
+  ;;
+4)
   BROWSER_NAME="Vivaldi"
   TARGET_DIR="$TARGET_DIR_VIVALDI"
-fi
+  ;;
+*)
+  echo "Invalid selection.  Please select 1-4."
+  exit 1
+  ;;
+esac
 
 echo "Installing $BROWSER_NAME host config"
 
 # Create config dir if not existing
 mkdir -p "$TARGET_DIR"
 
+# Escape host file
+ESCAPED_HOST_FILE=${HOST_FILE////\\/}
+
 # Copy manifest host config file
-if [ "$BROWSER" == "1" ] || [ "$BROWSER" == "2" ] || [ "$BROWSER" == "4" ]; then
+if [ "$BROWSER_NAME" == "Chrome" ] || \
+   [ "$BROWSER_NAME" == "Chromium" ] || \
+   [ "$BROWSER_NAME" == "Vivaldi" ]; then
   cp "$DIR/chrome-host.json" "$TARGET_DIR/$APP_NAME.json"
 	mkdir -p "$TARGET_DIR"/../policies/managed/
 	cp "$DIR/chrome-policy.json" "$TARGET_DIR"/../policies/managed/"$APP_NAME.json"
 else
-  cp "$DIR/firefox-host.json" "$TARGET_DIR_FIREFOX/$APP_NAME.json"
+  cp "$DIR/firefox-host.json" "$TARGET_DIR/$APP_NAME.json"
 fi
 
 # Replace path to host
