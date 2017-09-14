@@ -1,17 +1,18 @@
 SHELL := /usr/bin/env bash
-CHROME := $(shell which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null)
-PEM := $(shell find . -name "chrome-browserpass.pem")
+CHROME ?= `which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chrome 2>/dev/null || which chromium-browser 2>/dev/null`
+PEM := $(shell find . -maxdepth 1 -name "chrome-browserpass.pem")
+JS_OUTPUT=chrome/script.js chrome/inject.js
 
 .PHONY: empty
 empty:
 
 .PHONY: chrome
-chrome:
+chrome: js
 ifeq ($(PEM),./chrome-browserpass.pem)
-	$(CHROME) --disable-gpu --pack-extension=./chrome --pack-extension-key=$(PEM)
+	"$(CHROME)" --disable-gpu --pack-extension=./chrome --pack-extension-key=$(PEM)
 else
-	$(CHROME) --disable-gpu --pack-extension=./chrome
-	rm ./chrome.pem
+	"$(CHROME)" --disable-gpu --pack-extension=./chrome
+	[ -e ./chrome.pem ] && rm -v ./chrome.pem
 endif
 	mv chrome.crx chrome-browserpass.crx
 
@@ -20,8 +21,13 @@ firefox:
 	cp chrome/{*.html,*.css,*.js,*.png,*.svg} firefox/
 
 .PHONY: js
-js: chrome/script.browserify.js
+js: $(JS_OUTPUT)
+
+chrome/script.js: chrome/script.browserify.js 
 	browserify chrome/script.browserify.js -o chrome/script.js
+
+chrome/inject.js: chrome/inject.browserify.js
+	browserify chrome/inject.browserify.js -o chrome/inject.js
 
 .PHONY: static-files
 static-files: chrome/host.json firefox/host.json

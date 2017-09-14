@@ -10,4 +10,5 @@ firefox/*
 !firefox/host.json
 !firefox/manifest.json
 chrome/script.js
+chrome/inject.js
 node_modules
