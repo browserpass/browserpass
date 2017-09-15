@@ -1,6 +1,7 @@
 function save_options() {
   var autoSubmit = document.getElementById('auto-submit').checked;
   localStorage.setItem('autoSubmit', autoSubmit);
+  window.close();
 }
 
 function restore_options() {
