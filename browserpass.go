@@ -159,7 +159,7 @@ func parseLogin(r io.Reader) (*Login, error) {
 
 // guessLogin tries to guess a username from an entry's name.
 func guessUsername(name string) string {
-	if strings.Count(name, "/") >= 1 {
+	if strings.Count(filepath.ToSlash(name), "/") >= 1 {
 		return filepath.Base(name)
 	}
 	return ""
