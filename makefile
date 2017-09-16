@@ -41,6 +41,9 @@ browserpass: cmd/browserpass/ pass/ browserpass.go
 browserpass-linux64: cmd/browserpass/ pass/ browserpass.go
 	env GOOS=linux GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
+browserpass-windows64: cmd/browserpass/ pass/ browserpass.go
+	env GOOS=windows GOARCH=amd64 go build -o $@.exe ./cmd/browserpass
+
 browserpass-darwinx64: cmd/browserpass/ pass/ browserpass.go
 	env GOOS=darwin GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
@@ -51,7 +54,7 @@ browserpass-freebsd64: cmd/browserpass/ pass/ browserpass.go
 	env GOOS=freebsd GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
 .PHONY: static-files chrome firefox
-release: static-files chrome firefox browserpass-linux64 browserpass-darwinx64 browserpass-openbsd64 browserpass-freebsd64
+release: static-files chrome firefox browserpass-linux64 browserpass-darwinx64 browserpass-openbsd64 browserpass-freebsd64 browserpass-windows64
 	mkdir -p release
 	zip -jFS "release/chrome" chrome/* chrome-browserpass.crx
 	zip -jFS "release/firefox" firefox/*
@@ -59,3 +62,4 @@ release: static-files chrome firefox browserpass-linux64 browserpass-darwinx64 b
 	zip -FS "release/browserpass-darwinx64" browserpass-darwinx64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
 	zip -FS "release/browserpass-openbsd64" browserpass-openbsd64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
 	zip -FS "release/browserpass-freebsd64" browserpass-freebsd64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
+	zip -FS "release/browserpass-windows64" browserpass-windows64.exe *-host.json chrome-browserpass.crx install.ps1 README.md LICENSE
