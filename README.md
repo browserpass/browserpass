@@ -26,12 +26,12 @@ login: johndoe
 
 ## Installation
 
-Start out by downloading the [latest release package](https://github.com/dannyvankooten/browserpass/releases) for your operating system. Prebuilt binaries for 64-bit OSX & Linux are available. Arch users can install browserpass [from the AUR](https://aur.archlinux.org/packages/browserpass/).
+Start out by downloading the [latest release package](https://github.com/dannyvankooten/browserpass/releases) for your operating system. Prebuilt binaries for 64-bit OSX & Linux and Windows are available. Arch users can install browserpass [from the AUR](https://aur.archlinux.org/packages/browserpass/).
 
 #### Installing the host application
 
 1. Extract the package to where you would like to have the binary.
-1. Run `./install.sh` to install the native messaging host. If you want a system-wide installation, run the script with `sudo`.
+1. Run `./install.sh` (`.\install.ps1` on Windows) to install the native messaging host. If you want a system-wide installation, run the script with `sudo`. For Windows, system-wide installation can be done by running `.\install.ps1 global` as Administrator.
 
 Installing the binary & registering it with your browser through the installation script is required to allow the browser extension to talk to the local binary application.
 
