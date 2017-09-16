@@ -20,11 +20,23 @@ $ffile -replace '%%replace%%', ((Join-Path -Path $dirpath -ChildPath 'browserpas
 $cfile = gc chrome-host.json
 $cfile -replace '%%replace%%', ((Join-Path -Path $dirpath -ChildPath 'browserpass-windows64.exe' | ConvertTo-json) -replace '^"|"$', "") | Out-File -Encoding UTF8 $chrome_jsonpath
 
-# Add oour registry values fore ff
-New-Item -Path "hkcu:\Software\Mozilla\NativeMessagingHosts\$app" -force
-New-ItemProperty -Path "hkcu:\Software\Mozilla\NativeMessagingHosts\$app" -Name '(Default)' -Value $ff_jsonpath -force
+if ($args[0] -eq "global") {
+	Write-Host "Installing browserpass for all users"
+	# add our registry values for all users
+	New-Item -Path "hklm:\Software\Mozilla\NativeMessagingHosts" -force
+	New-Item -Path "hklm:\Software\Mozilla\NativeMessagingHosts\$app" -force
+	New-ItemProperty -Path "hklm:\Software\Mozilla\NativeMessagingHosts\$app" -Name '(Default)' -Value $ff_jsonpath -force
 
-# Add oour registry values fore chrome
-New-Item -Path "hkcu:\Software\Google\Chrome\NativeMessagingHosts\$app" -force
-New-ItemProperty -Path "hkcu:\Software\Google\Chrome\NativeMessagingHosts\$app" -Name '(Default)' -Value $chrome_jsonpath -force
+	#New-Item -Path "hklm:\Software\Google\Chrome\NativeMessagingHosts" -force
+	New-Item -Path "hklm:\Software\Google\Chrome\NativeMessagingHosts\$app" -force
+	New-ItemProperty -Path "hklm:\Software\Google\Chrome\NativeMessagingHosts\$app" -Name '(Default)' -Value $chrome_jsonpath -force
+} else {
+	Write-Host "Installing browserpass for current user"
+	# add our registry values for current users
+	New-Item -Path "hkcu:\Software\Mozilla\NativeMessagingHosts\$app" -force
+	New-ItemProperty -Path "hkcu:\Software\Mozilla\NativeMessagingHosts\$app" -Name '(Default)' -Value $ff_jsonpath -force
+
+	New-Item -Path "hkcu:\Software\Google\Chrome\NativeMessagingHosts\$app" -force
+	New-ItemProperty -Path "hkcu:\Software\Google\Chrome\NativeMessagingHosts\$app" -Name '(Default)' -Value $chrome_jsonpath -force
+}
 
