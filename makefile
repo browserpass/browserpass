@@ -62,4 +62,4 @@ release: static-files chrome firefox browserpass-linux64 browserpass-darwinx64 b
 	zip -FS "release/browserpass-darwinx64" browserpass-darwinx64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
 	zip -FS "release/browserpass-openbsd64" browserpass-openbsd64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
 	zip -FS "release/browserpass-freebsd64" browserpass-freebsd64 *-host.json chrome-browserpass.crx install.sh README.md LICENSE
-	zip -FS "release/browserpass-windows64" browserpass-windows64.exe *-host.json chrome-browserpass.crx install.ps1 README.md LICENSE
+	zip -FS "release/browserpass-windows64" browserpass-windows64.exe *-host.json chrome-browserpass.crx *.ps1 README.md LICENSE

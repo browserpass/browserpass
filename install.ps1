@@ -11,7 +11,7 @@ $chrome_jsonpath = Join-Path -Path $dirpath -ChildPath "$app-chrome.json"
 new-item -type Directory -Path $dirpath -force
 
 # copy our bin to local directory
-& cp browserpass-windows64.exe $dirpath
+& Copy-Item browserpass-windows64.exe $dirpath
 
 # copy the native messaging manifest
 $ffile = gc firefox-host.json
@@ -20,24 +20,40 @@ $ffile -replace '%%replace%%', ((Join-Path -Path $dirpath -ChildPath 'browserpas
 $cfile = gc chrome-host.json
 $cfile -replace '%%replace%%', ((Join-Path -Path $dirpath -ChildPath 'browserpass-windows64.exe' | ConvertTo-json) -replace '^"|"$', "") | Out-File -Encoding UTF8 $chrome_jsonpath
 
-if ($args[0] -eq "global") {
-    Write-Host "Installing browserpass for all users"
-    # add our registry values for all users
-    New-Item -Path "hklm:\Software\Mozilla\NativeMessagingHosts" -force
-    New-Item -Path "hklm:\Software\Mozilla\NativeMessagingHosts\$app" -force
-    New-ItemProperty -Path "hklm:\Software\Mozilla\NativeMessagingHosts\$app" -Name '(Default)' -Value $ff_jsonpath -force
+Write-Host ""
+Write-Host "Which browser are you using?"
+Write-Host "1) Firefox"
+Write-Host "2) Chrome"
 
-    #New-Item -Path "hklm:\Software\Google\Chrome\NativeMessagingHosts" -force
-    New-Item -Path "hklm:\Software\Google\Chrome\NativeMessagingHosts\$app" -force
-    New-ItemProperty -Path "hklm:\Software\Google\Chrome\NativeMessagingHosts\$app" -Name '(Default)' -Value $chrome_jsonpath -force
-}
-else {
-    Write-Host "Installing browserpass for current user"
-    # add our registry values for current users
-    New-Item -Path "hkcu:\Software\Mozilla\NativeMessagingHosts\$app" -force
-    New-ItemProperty -Path "hkcu:\Software\Mozilla\NativeMessagingHosts\$app" -Name '(Default)' -Value $ff_jsonpath -force
+$browser = Read-Host
+$allUsers = Read-Host "Install for all users? (y/n) [n]"
 
-    New-Item -Path "hkcu:\Software\Google\Chrome\NativeMessagingHosts\$app" -force
-    New-ItemProperty -Path "hkcu:\Software\Google\Chrome\NativeMessagingHosts\$app" -Name '(Default)' -Value $chrome_jsonpath -force
+$installDest = "cu" # Current User
+switch -wildcard ($allUsers) {
+    "y*" { $installDest = "lm"; Break; }
+    "n*" { $installDest = "cu"; Break; }
+    default { $installDest = "cu" }
 }
 
+$browserToUse = ""
+switch -regex ($browser) {
+    '^1$|^f' { $browserToUse = "Mozilla"; Break; }
+    '^2$|^c' { $browserToUse = "Google/Chrome"; Break; }
+    default {$browserToUse = "unknown"}
+}
+
+If ($installDest -eq "lm" -And -NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+            [Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Warning "Please re-run this script with Admin rights!"
+    exit
+}
+
+$regPath = "hk{0}:\Software\{1}\NativeMessagingHosts" -f $installDest, $browserToUse
+
+If (-NOT (Test-Path -Path $regPath)) {
+    New-Item -Path $regPath -force
+}
+New-Item -Path "$regPath\$app" -force
+New-ItemProperty -Path "$regPath\$app"`
+    -Name '(Default)'`
+    -Value $(If ($browserToUse -eq "Mozilla") {$ff_jsonpath} Else {$chrome_jsonpath})
