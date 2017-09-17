@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/url"
 	"os/exec"
@@ -152,7 +153,7 @@ func parseTotp(str string, l *Login) error {
 
 		v := u.Query()
 		v.Set("secret", strings.ToUpper(v.Get("secret")))
-		ourl = u.String()
+		ourl = fmt.Sprintf("%s://%s/%s?%s", u.Scheme, u.Host, u.Path[1:], v.Encode())
 
 		o, label, err := twofactor.FromURL(ourl)
 		if err != nil {
