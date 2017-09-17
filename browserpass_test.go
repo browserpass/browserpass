@@ -24,18 +24,18 @@ func TestParseLogin(t *testing.T) {
 }
 
 func TestOtp(t *testing.T) {
-	r := strings.NewReader("password\n\nfoo\nlogin: bar\nTOTP: GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ")
+	r := strings.NewReader("password\n\nfoo\nlogin: bar\notpauth://totp/totp-secret?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&issuer=test")
 
 	login, err := parseLogin(r)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if login.otpSecret != "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" {
-		t.Errorf("otpSecret is '%s', expected '%s'", login.otpSecret, "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ")
+	if login.otpLabel != "totp-secret" {
+		t.Errorf("otpLabel is '%s', expected '%s'", login.otpLabel, "totp-secret")
 	}
 
-	o, err := twofactor.NewGoogleTOTP(login.otpSecret)
+	o, err := twofactor.NewGoogleTOTP("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ")
 	if err != nil {
 		t.Error(err)
 	}

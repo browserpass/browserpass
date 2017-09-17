@@ -18,10 +18,10 @@ import (
 
 // Login represents a single pass login.
 type Login struct {
-	Username  string `json:"u"`
-	Password  string `json:"p"`
-	OTP       string `json:"digits"`
-	otpSecret string
+	Username string `json:"u"`
+	Password string `json:"p"`
+	OTP      string `json:"digits"`
+	otpLabel string `json:"label"`
 }
 
 var endianness = binary.LittleEndian
@@ -139,16 +139,16 @@ func readLoginGPG(r io.Reader) (*Login, error) {
 }
 
 func parseTotp(str string, l *Login) error {
-	re := regexp.MustCompile("(?i)^(totp|otp):")
-	replaced := re.ReplaceAllString(str, "")
-	if len(replaced) != len(str) {
-		secret := strings.TrimSpace(replaced)
-		o, err := twofactor.NewGoogleTOTP(secret)
+	re := regexp.MustCompile("^otpauth.*$")
+	url := re.FindString(str)
+	if url != "" {
+		secret := strings.TrimSpace(url)
+		o, label, err := twofactor.FromURL(secret)
 		if err != nil {
 			return err
 		}
 		l.OTP = o.OTP()
-		l.otpSecret = secret
+		l.otpLabel = label
 	}
 
 	return nil
