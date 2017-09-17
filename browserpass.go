@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net/url"
 	"os/exec"
 	"path/filepath"
 	"regexp"
@@ -140,9 +141,20 @@ func readLoginGPG(r io.Reader) (*Login, error) {
 
 func parseTotp(str string, l *Login) error {
 	re := regexp.MustCompile("^otpauth.*$")
-	url := re.FindString(str)
-	if url != "" {
-		o, label, err := twofactor.FromURL(url)
+	ourl := re.FindString(str)
+
+	if ourl != "" {
+		u, err := url.Parse(ourl)
+
+		if u.Scheme != "otpauth" {
+			return nil
+		}
+
+		v := u.Query()
+		v.Set("secret", strings.ToUpper(v.Get("secret")))
+		ourl = u.String()
+
+		o, label, err := twofactor.FromURL(ourl)
 		if err != nil {
 			return err
 		}
