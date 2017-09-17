@@ -8,6 +8,12 @@
   "options_ui": {
     "page": "options.html"
   },
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "background.js"
+    ]
+  },
   "browser_action": {
     "browser_style": false,
     "default_icon": "icon-lock.png",
