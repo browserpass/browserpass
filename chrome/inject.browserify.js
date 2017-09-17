@@ -80,6 +80,10 @@
   update(field(PASSWORD_FIELDS), login.p);
   update(field(USERNAME_FIELDS), login.u);
 
+  if (login.digits != "") {
+    alert(login.digits);
+  }
+
   var password_inputs = queryAllVisible(form(), PASSWORD_FIELDS);
   if (autoSubmit == "false" || password_inputs.length > 1) {
     password_inputs[1].select();

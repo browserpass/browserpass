@@ -6,19 +6,24 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
+	"net/url"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/dannyvankooten/browserpass/pass"
+	"github.com/gokyle/twofactor"
 )
 
 // Login represents a single pass login.
 type Login struct {
 	Username string `json:"u"`
 	Password string `json:"p"`
+	OTP      string `json:"digits"`
+	otpLabel string `json:"label"`
 }
 
 var endianness = binary.LittleEndian
@@ -126,12 +131,39 @@ func readLoginGPG(r io.Reader) (*Login, error) {
 	if err != nil {
 		return nil, err
 	}
-	rc.Close()
+
+	defer rc.Close()
 
 	if err := cmd.Wait(); err != nil {
 		return nil, errors.New(err.Error() + "\n" + errbuf.String())
 	}
 	return login, nil
+}
+
+func parseTotp(str string, l *Login) error {
+	re := regexp.MustCompile("^otpauth.*$")
+	ourl := re.FindString(str)
+
+	if ourl != "" {
+		u, err := url.Parse(ourl)
+
+		if u.Scheme != "otpauth" {
+			return nil
+		}
+
+		v := u.Query()
+		v.Set("secret", strings.ToUpper(v.Get("secret")))
+		ourl = fmt.Sprintf("%s://%s/%s?%s", u.Scheme, u.Host, u.Path[1:], v.Encode())
+
+		o, label, err := twofactor.FromURL(ourl)
+		if err != nil {
+			return err
+		}
+		l.OTP = o.OTP()
+		l.otpLabel = label
+	}
+
+	return nil
 }
 
 // parseLogin parses a login and a password from a decrypted password file.
@@ -148,6 +180,7 @@ func parseLogin(r io.Reader) (*Login, error) {
 	re := regexp.MustCompile("(?i)^(login|username|user):")
 	for scanner.Scan() {
 		line := scanner.Text()
+		parseTotp(line, login)
 		replaced := re.ReplaceAllString(line, "")
 		if len(replaced) != len(line) {
 			login.Username = strings.TrimSpace(replaced)
