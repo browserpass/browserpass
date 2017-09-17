@@ -2,9 +2,18 @@
   "manifest_version": 2,
   "name": "browserpass",
   "description": "Browserpass Firefox extension for zx2c4's pass (password manager).",
-  "version": "1.0.3",
+  "version": "1.0.12",
   "author": "Danny van Kooten",
   "homepage_url": "https://github.com/dannyvankooten/browserpass",
+  "options_ui": {
+    "page": "options.html"
+  },
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "background.js"
+    ]
+  },
   "browser_action": {
     "browser_style": false,
     "default_icon": "icon-lock.png",
@@ -12,16 +21,17 @@
   },
   "permissions": [
     "activeTab",
-    "nativeMessaging"
+    "nativeMessaging",
+    "storage"
   ],
   "commands": {
-   "_execute_browser_action": {
-     "suggested_key": {
-       "default": "Alt+Shift+L"
-     }
-   }
- },
- "applications": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+L"
+      }
+    }
+  },
+  "applications": {
     "gecko": {
       "id": "browserpass@dannyvankooten.com",
       "strict_min_version": "50.0"

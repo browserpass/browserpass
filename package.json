@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "browserify": "^13.3.0",
-    "mithril": "^0.2.5",
-    "parse-domain": "^1.1.0"
+    "mithril": "^0.2.5"
   }
 }

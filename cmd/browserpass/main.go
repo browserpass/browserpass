@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"os"
 
@@ -16,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := browserpass.Run(os.Stdin, os.Stdout, s); err != nil {
+	if err := browserpass.Run(os.Stdin, os.Stdout, s); err != nil && err != io.EOF {
 		log.Fatal(err)
 	}
 }

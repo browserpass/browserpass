@@ -4,6 +4,6 @@
   "path": "%%replace%%",
   "type": "stdio",
   "allowed_extensions": [
-     "browserpass@dannyvankooten.com"
-   ]
+    "browserpass@dannyvankooten.com"
+  ]
 }
