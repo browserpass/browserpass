@@ -80,7 +80,7 @@
   update(field(PASSWORD_FIELDS), login.p);
   update(field(USERNAME_FIELDS), login.u);
 
-  if (login.digits !== "") {
+  if (login.digits != "") {
     alert(login.digits);
   }
 
