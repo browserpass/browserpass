@@ -142,8 +142,7 @@ func parseTotp(str string, l *Login) error {
 	re := regexp.MustCompile("^otpauth.*$")
 	url := re.FindString(str)
 	if url != "" {
-		secret := strings.TrimSpace(url)
-		o, label, err := twofactor.FromURL(secret)
+		o, label, err := twofactor.FromURL(url)
 		if err != nil {
 			return err
 		}
@@ -168,10 +167,7 @@ func parseLogin(r io.Reader) (*Login, error) {
 	re := regexp.MustCompile("(?i)^(login|username|user):")
 	for scanner.Scan() {
 		line := scanner.Text()
-		err := parseTotp(line, login)
-		if err != nil {
-			return nil, err
-		}
+		parseTotp(line, login)
 		replaced := re.ReplaceAllString(line, "")
 		if len(replaced) != len(line) {
 			login.Username = strings.TrimSpace(replaced)
