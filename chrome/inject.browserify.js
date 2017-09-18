@@ -1,7 +1,7 @@
 (function(d) {
   const USERNAME_FIELDS =
-    "input[id=username], input[id=user_name], input[id=userid], input[id=user_id], input[id=login], input[id=email], input[type=email], input[type=text]";
-  const PASSWORD_FIELDS = "input[type=password]";
+    "input[id=username i], input[id=user_name i], input[id=userid i], input[id=user_id i], input[id=login i], input[id=email i], input[type=email i], input[type=text i]";
+  const PASSWORD_FIELDS = "input[type=password i]";
 
   function queryAllVisible(parent, selector, form) {
     var result = [];
