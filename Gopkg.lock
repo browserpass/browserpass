@@ -15,6 +15,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "062cd7e4e68206d8bab9b18396626e855c992658"
+
+[[projects]]
+  branch = "master"
   name = "rsc.io/qr"
   packages = [".","coding","gf256"]
   revision = "48b2ede4844e13f1a2b7ce4d2529c9af7e359fc5"
@@ -22,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f962ba80d83a10086a4fbc92f1ba5ec0ccf46703e0d8a0e2f291d6a156bb8bac"
+  inputs-digest = "cf738c6ba5f7f4087970a763781d0a3184aae44ca125d025f7b1a91128b3bd0c"
   solver-name = "gps-cdcl"
   solver-version = 1

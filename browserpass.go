@@ -37,6 +37,8 @@ type msg struct {
 
 // Run starts browserpass.
 func Run(stdin io.Reader, stdout io.Writer, s pass.Store) error {
+	Protector("stdio rpath proc exec")
+
 	for {
 		// Get message length, 4 bytes
 		var n uint32
@@ -125,6 +127,8 @@ func readLoginGPG(r io.Reader) (*Login, error) {
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
+
+	Protector("stdio")
 
 	// Read decrypted output
 	login, err := parseLogin(rc)
