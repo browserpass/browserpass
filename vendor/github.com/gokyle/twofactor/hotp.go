@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // HOTP represents an RFC-4226 Hash-based One Time Password instance.
@@ -64,7 +65,7 @@ func hotpFromURL(u *url.URL) (*HOTP, string, error) {
 	label := u.Path[1:]
 	v := u.Query()
 
-	secret := v.Get("secret")
+	secret := strings.ToUpper(v.Get("secret"))
 	if secret == "" {
 		return nil, "", ErrInvalidURL
 	}

@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -115,7 +116,7 @@ func totpFromURL(u *url.URL) (*TOTP, string, error) {
 	label := u.Path[1:]
 	v := u.Query()
 
-	secret := v.Get("secret")
+	secret := strings.ToUpper(v.Get("secret"))
 	if secret == "" {
 		return nil, "", ErrInvalidURL
 	}

@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/gokyle/twofactor"
   packages = ["."]
-  revision = "5d57d844d43d0e2d9d37c28f9a6e3a14963b284b"
+  revision = "eaad1884d40f9cabff98a57a524c17afd00c9fe7"
 
 [[projects]]
   branch = "master"
