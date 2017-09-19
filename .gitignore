@@ -14,3 +14,4 @@ chrome/inject.js
 node_modules
 .vagrant/
 vendor/
+.*.swp
