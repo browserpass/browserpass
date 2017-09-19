@@ -1,11 +1,10 @@
 # CONTRIBUTING
 
-You will need Node, [Yarn](https://yarnpkg.com/) and Golang installed.
+You will need Node, [Yarn](https://yarnpkg.com/), Golang and [dep](https://github.com/golang/dep) installed.
 
 ## To build
-- Run `yarn`
 - Open `makefile` and, if needed, change `google-chrome` to the appropriate name of your Google Chrome executable (in Linux, it could be google-chrome-stable)
-- Run `make js` to install Node dependencies and generate a JS bundle
+- Run `make deps` to install Node/GO dependencies
 - Run `make release`
 
 The command above will generate packed extensions for both Firefox and Chrome and compile the Go binaries for Linux and MacOSX.
