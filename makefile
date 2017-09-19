@@ -21,7 +21,9 @@ firefox:
 	cp chrome/{*.html,*.css,*.js,*.png,*.svg} firefox/
 
 .PHONY: js
-js: $(JS_OUTPUT)
+js: deps $(JS_OUTPUT)
+	cp chrome/host.json chrome-host.json
+	cp firefox/host.json firefox-host.json
 
 chrome/script.js: chrome/script.browserify.js
 	browserify chrome/script.browserify.js -o chrome/script.js
@@ -29,27 +31,22 @@ chrome/script.js: chrome/script.browserify.js
 chrome/inject.js: chrome/inject.browserify.js
 	browserify chrome/inject.browserify.js -o chrome/inject.js
 
-.PHONY: static-files
-static-files: chrome/host.json firefox/host.json
-	cp chrome/host.json chrome-host.json
-	cp firefox/host.json firefox-host.json
-
-browserpass: cmd/browserpass/ pass/ browserpass.go
+browserpass: deps cmd/browserpass/ pass/ browserpass.go
 	go build -o $@ ./cmd/browserpass
 
-browserpass-linux64: cmd/browserpass/ pass/ browserpass.go
+browserpass-linux64: deps cmd/browserpass/ pass/ browserpass.go
 	env GOOS=linux GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
-browserpass-windows64: cmd/browserpass/ pass/ browserpass.go
+browserpass-windows64: deps cmd/browserpass/ pass/ browserpass.go
 	env GOOS=windows GOARCH=amd64 go build -o $@.exe ./cmd/browserpass
 
-browserpass-darwinx64: cmd/browserpass/ pass/ browserpass.go
+browserpass-darwinx64: deps cmd/browserpass/ pass/ browserpass.go
 	env GOOS=darwin GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
-browserpass-openbsd64: cmd/browserpass/ pass/ browserpass.go
+browserpass-openbsd64: deps cmd/browserpass/ pass/ browserpass.go
 	env GOOS=openbsd GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
-browserpass-freebsd64: cmd/browserpass/ pass/ browserpass.go
+browserpass-freebsd64: deps cmd/browserpass/ pass/ browserpass.go
 	env GOOS=freebsd GOARCH=amd64 go build -o $@ ./cmd/browserpass
 
 clean:
@@ -69,7 +66,7 @@ deps:
 	yarn
 	dep ensure
 
-tarball: clean deps js static-files
+tarball: clean js
 	rm -rf /tmp/browserpass /tmp/browserpass-src.tar.gz
 	cp -r ../browserpass /tmp/browserpass
 	rm -rf /tmp/browserpass/.git
@@ -78,8 +75,8 @@ tarball: clean deps js static-files
 	mkdir -p release
 	cp /tmp/browserpass-src.tar.gz release/
 
-.PHONY: static-files js chrome firefox
-release: clean deps js static-files tarball chrome firefox browserpass-linux64 browserpass-darwinx64 browserpass-openbsd64 browserpass-freebsd64 browserpass-windows64
+.PHONY: release js chrome firefox
+release: clean js tarball chrome firefox browserpass-linux64 browserpass-darwinx64 browserpass-openbsd64 browserpass-freebsd64 browserpass-windows64
 	mkdir -p release
 	cp chrome-browserpass.crx release/
 	zip -jFS "release/chrome" chrome/* chrome-browserpass.crx
