@@ -7,9 +7,11 @@ import (
 
 	"github.com/dannyvankooten/browserpass"
 	"github.com/dannyvankooten/browserpass/pass"
+	"github.com/dannyvankooten/browserpass/protector"
 )
 
 func main() {
+	protector.Protect("stdio rpath proc exec getpw")
 	log.SetPrefix("[Browserpass] ")
 
 	s, err := pass.NewDefaultStore()
