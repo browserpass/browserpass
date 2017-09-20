@@ -61,7 +61,7 @@ case $OPERATING_SYSTEM in
             BROWSER_PATHS=( "Chrome:/etc/opt/chrome/native-messaging-hosts"
             "Chromium:/etc/chromium/native-messaging-hosts"
             "Firefox:/usr/lib/mozilla/native-messaging-hosts"
-            "Vivaldi:/etc/chromium/native-messaging-hosts" )
+            "Vivaldi:/etc/vivaldi/native-messaging-hosts" )
         else
             BROWSER_PATHS=( "Chrome:$HOME/.config/google-chrome/NativeMessagingHosts"
             "Chromium:$HOME/.config/chromium/NativeMessagingHosts"
@@ -116,7 +116,8 @@ if [ -e "$DIR/browserpass" ]; then
     HOST_FILE="$DIR/browserpass"
 fi
 
-no_browser_found=true;
+no_browser_found=true
+rejected_installs=()
 
 for browser in "${BROWSER_PATHS[@]}" ; do
     browser_name=${browser%%:*}
@@ -130,6 +131,7 @@ for browser in "${BROWSER_PATHS[@]}" ; do
                 install_host_config $browser_name $browser_path
                 ;;
             *)
+                rejected_installs+=("$(dirname "$browser_path")")
                 ;;
         esac
     fi
@@ -137,11 +139,24 @@ done
 
 if [ "$no_browser_found" = true ]; then
     echo "No compatible browsers found."
-    echo "If  you do  actually have a  browser installed  which you  think should  be supported,"
+    echo "If you do actually have a browser installed which you think should be supported,"
     echo "please submit a bug report to https://github.com/dannyvankooten/browserpass, detailing"
-    echo "the exact name  of the browser, and (if you know it) the location of its configuration"
+    echo "the exact name of the browser, and (if you know it) the location of its configuration"
     echo "directory."
     exit 1
+fi
+
+if [ ${#rejected_installs[@]} -ne 0 ]; then
+    echo "Note: If this script wrongly detected a browser you no longer have (but once had)"
+    echo "on your system, it might be because the configuration directory was left behind"
+    echo "after uninstalling."
+    echo
+    echo "To fix this, try issuing the following commands (only if you don't need the old"
+    echo "config anymore, obviously):"
+    echo
+    for path in "${rejected_installs[@]}" ; do
+        echo "$ rm -rf $path"
+    done
 fi
 
 exit 0
