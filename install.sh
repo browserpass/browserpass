@@ -123,12 +123,12 @@ for browser in "${BROWSER_PATHS[@]}" ; do
     browser_name=${browser%%:*}
     browser_path=${browser#*:}
 
-    if [ -d $(dirname "$browser_path") ]; then
+    if [ -d "$(dirname "$browser_path")" ]; then
         no_browser_found=false
         read -r -p "Detected $browser_name. Install for this browser? [Y/n] " response
         case "$response" in
             [yY][eE][sS]|[yY])
-                install_host_config $browser_name $browser_path
+                install_host_config "$browser_name" "$browser_path"
                 ;;
             *)
                 rejected_installs+=("$(dirname "$browser_path")")
