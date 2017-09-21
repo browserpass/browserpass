@@ -22,7 +22,7 @@ type Login struct {
 	Username string `json:"u"`
 	Password string `json:"p"`
 	OTP      string `json:"digits"`
-	otpLabel string `json:"label"`
+	OTPLabel string `json:"label"`
 }
 
 var endianness = binary.LittleEndian
@@ -152,7 +152,7 @@ func parseTotp(str string, l *Login) error {
 			return err
 		}
 		l.OTP = o.OTP()
-		l.otpLabel = label
+		l.OTPLabel = label
 	}
 
 	return nil
