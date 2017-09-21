@@ -1,6 +1,6 @@
 # CONTRIBUTING
 
-You will need Node, [Yarn](https://yarnpkg.com/), Golang and [dep](https://github.com/golang/dep) installed.
+You will need docker or Node, [Yarn](https://yarnpkg.com/), Golang and [dep](https://github.com/golang/dep) installed.
 
 ## To build
 - Run `make` to compile both front-end and back-end code
@@ -23,6 +23,22 @@ The commands above will generate unpacked extensions for both Firefox and Chrome
     - Go to `about:debugging#addons`
     - Click `Load temporary add-on`
     - Select `browserpass/firefox` directory
+
+## Build using Docker
+
+The [Dockerfile](Dockerfile) will set up a docker image suitable for running basic make targets such as building frontend and backend.
+
+The `chrome` target is not supported by now (therefore `release` target will not work).
+
+To build the docker image run the following command in project root:
+```shell
+docker build -t browserpass-dev .
+```
+
+To build browserpass (frontend and backend) via docker, run the following from project root:
+```shell
+docker run --rm -v "$(pwd)":/browserpass browserpass-dev browserpass js
+```
 
 ## Setting up a Vagrant build environment and building the Linux binary
 
