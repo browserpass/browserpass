@@ -3,10 +3,11 @@
 You will need Docker or Node, [Yarn](https://yarnpkg.com/), Golang and [dep](https://github.com/golang/dep) installed.
 
 ## To build
-- Run `make` to compile both front-end and back-end code
+- Run `make` to fetch all dependencies and compile both front-end and back-end code
 
 OR
 
+- Run `make deps` to download all dependencies (you don't need to run this very often)
 - Run `make js` to compile only front-end code
 - Run `make browserpass` to compile only back-end code
 
@@ -40,8 +41,9 @@ To build browserpass (frontend and backend) via docker, run the following from p
 docker run --rm -v "$(pwd)":/browserpass browserpass-dev
 ```
 
-If you only want to build front-end or backend, run one of the following:
+If you only want to download dependencies, build front-end or backend code, run one of the following:
 ```shell
+docker run --rm -v "$(pwd)":/browserpass browserpass-dev deps
 docker run --rm -v "$(pwd)":/browserpass browserpass-dev js
 docker run --rm -v "$(pwd)":/browserpass browserpass-dev browserpass
 ```
