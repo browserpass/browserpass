@@ -5,6 +5,7 @@ var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
 var logins = null;
+var highlightedItem = null;
 var domain, urlDuringSearch;
 
 m.mount(document.getElementById("mount"), { view: view });
@@ -18,6 +19,11 @@ chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
 function view() {
   var results = "";
 
+  function style(faviconUrl, l, i) {
+    var style = `background-image: url('${faviconUrl}');`;
+    return i == highlightedItem ? style + ` background-color: yellow;` : style;
+  }
+
   if (searching) {
     results = m("div.loader");
   } else if (logins !== null) {
@@ -29,13 +35,13 @@ function view() {
         m.trust(`No passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
-      results = logins.map(function(l) {
+      results = logins.map(function(l, i) {
         var faviconUrl = getFaviconUrl(domain);
         return m(
           "button.login",
           {
             onclick: getLoginData.bind(l),
-            style: `background-image: url('${faviconUrl}')`
+            style: style(faviconUrl, l, i)
           },
           l
         );
@@ -49,7 +55,7 @@ function view() {
       m(
         "form",
         {
-          onsubmit: submitSearchForm
+          onsubmit: submitSearchForm(results)
         },
         [
           m("input", {
@@ -57,7 +63,8 @@ function view() {
             name: "s",
             placeholder: "Search password..",
             autocomplete: "off",
-            autofocus: "on"
+            autofocus: "on",
+            onkeydown: keyHandler.bind(results),
           }),
           m("input", {
             type: "submit",
@@ -73,15 +80,25 @@ function view() {
   ];
 }
 
-function submitSearchForm(e) {
-  e.preventDefault();
+function submitSearchForm(resultsArray) {
+  return function (e) {
+    e.preventDefault();
 
-  // don't search without input.
-  if (!this.s.value.length) {
-    return;
+    // don't search without input.
+    if (!this.s.value.length) {
+
+      // open highlighted item
+      if (highlightedItem !== null) {
+        var item = resultsArray[highlightedItem];
+        if (item) {
+          return getLoginData.call(item.children[0]);
+        }
+      }
+      return;
+    }
+
+    searchPassword(this.s.value);
   }
-
-  searchPassword(this.s.value);
 }
 
 function init(tab) {
@@ -139,6 +156,7 @@ function getFaviconUrl(domain) {
 function getLoginData() {
   searching = true;
   logins = null;
+  highlightedItem = null;
   m.redraw();
 
   chrome.runtime.sendMessage(
@@ -148,4 +166,43 @@ function getLoginData() {
       window.close();
     }
   );
+}
+
+function rotateHighlight(n) {
+  // if items are empty
+  if (this.length < 1) {
+    return null;
+  }
+
+  // if nothing is highlighted at the moment
+  if (highlightedItem === null) {
+    return n > 0 ? 0 : this.length - 1;
+  }
+
+  var newHighlightedItem = highlightedItem + n;
+
+  // if newHighlighted greater than number of items
+  if (newHighlightedItem >= this.length) {
+    return 0;
+  }
+
+  // if newHighlighter lesser than zero
+  if (newHighlightedItem < 0) {
+    return this.length - 1;
+  }
+
+  return newHighlightedItem;
+}
+
+function keyHandler(e) {
+  switch (e.key) {
+  case 'ArrowUp':
+    highlightedItem = rotateHighlight.call(this, -1);
+    m.redraw();
+    break;
+  case 'ArrowDown':
+    highlightedItem = rotateHighlight.call(this, 1);
+    m.redraw();
+    break;
+  }
 }
