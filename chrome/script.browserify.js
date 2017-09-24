@@ -5,7 +5,6 @@ var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
 var logins = null;
-var highlightedItem = null;
 var domain, urlDuringSearch;
 
 m.mount(document.getElementById("mount"), { view: view });
@@ -19,11 +18,6 @@ chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
 function view() {
   var results = "";
 
-  function style(faviconUrl, l, i) {
-    var style = `background-image: url('${faviconUrl}');`;
-    return i == highlightedItem ? style + ` background-color: yellow;` : style;
-  }
-
   if (searching) {
     results = m("div.loader");
   } else if (logins !== null) {
@@ -35,13 +29,13 @@ function view() {
         m.trust(`No passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
-      results = logins.map(function(l, i) {
+      results = logins.map(function(l) {
         var faviconUrl = getFaviconUrl(domain);
         return m(
           "button.login",
           {
             onclick: getLoginData.bind(l),
-            style: style(faviconUrl, l, i)
+            style: `background-image: url('${faviconUrl}')`
           },
           l
         );
@@ -51,20 +45,20 @@ function view() {
 
   return [
     // search form
-    m("div.search", [
+    m("div.search", { onkeydown: keyHandler }, [
       m(
         "form",
         {
-          onsubmit: submitSearchForm(results)
+          onsubmit: submitSearchForm
         },
         [
           m("input", {
             type: "text",
+            id: "search-field",
             name: "s",
             placeholder: "Search password..",
             autocomplete: "off",
-            autofocus: "on",
-            onkeydown: keyHandler.bind(results),
+            autofocus: "on"
           }),
           m("input", {
             type: "submit",
@@ -76,29 +70,19 @@ function view() {
     ]),
 
     // results
-    m("div.results", results)
+    m("div.results", { onkeydown: keyHandler }, results)
   ];
 }
 
-function submitSearchForm(resultsArray) {
-  return function (e) {
-    e.preventDefault();
+function submitSearchForm(e) {
+  e.preventDefault();
 
-    // don't search without input.
-    if (!this.s.value.length) {
-
-      // open highlighted item
-      if (highlightedItem !== null) {
-        var item = resultsArray[highlightedItem];
-        if (item) {
-          return getLoginData.call(item.children[0]);
-        }
-      }
-      return;
-    }
-
-    searchPassword(this.s.value);
+  // don't search without input.
+  if (!this.s.value.length) {
+    return;
   }
+
+  searchPassword(this.s.value);
 }
 
 function init(tab) {
@@ -156,7 +140,6 @@ function getFaviconUrl(domain) {
 function getLoginData() {
   searching = true;
   logins = null;
-  highlightedItem = null;
   m.redraw();
 
   chrome.runtime.sendMessage(
@@ -168,41 +151,29 @@ function getLoginData() {
   );
 }
 
-function rotateHighlight(n) {
-  // if items are empty
-  if (this.length < 1) {
-    return null;
-  }
-
-  // if nothing is highlighted at the moment
-  if (highlightedItem === null) {
-    return n > 0 ? 0 : this.length - 1;
-  }
-
-  var newHighlightedItem = highlightedItem + n;
-
-  // if newHighlighted greater than number of items
-  if (newHighlightedItem >= this.length) {
-    return 0;
-  }
-
-  // if newHighlighter lesser than zero
-  if (newHighlightedItem < 0) {
-    return this.length - 1;
-  }
-
-  return newHighlightedItem;
-}
-
+// This function uses regular DOM
+// therefore there is no need for redraw calls
 function keyHandler(e) {
   switch (e.key) {
   case 'ArrowUp':
-    highlightedItem = rotateHighlight.call(this, -1);
-    m.redraw();
+    switchFocus('button.login:last-child', 'previousElementSibling');
     break;
+
   case 'ArrowDown':
-    highlightedItem = rotateHighlight.call(this, 1);
-    m.redraw();
+    switchFocus('button.login:first-child', 'nextElementSibling');
     break;
+  }
+}
+
+function switchFocus(firstSelector, nextNodeAttr) {
+  var inputId = 'search-field';
+  var newActive = document.activeElement.id === inputId ?
+      document.querySelector(firstSelector) :
+      document.activeElement[nextNodeAttr];
+
+  if (newActive) {
+    newActive.focus();
+  } else {
+    document.getElementById('search-field').focus();
   }
 }
