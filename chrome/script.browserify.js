@@ -174,6 +174,6 @@ function switchFocus(firstSelector, nextNodeAttr) {
   if (newActive) {
     newActive.focus();
   } else {
-    document.getElementById('search-field').focus();
+    document.getElementById(inputId).focus();
   }
 }
