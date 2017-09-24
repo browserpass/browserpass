@@ -53,6 +53,15 @@ Click the lock icon or use **Alt + Shift + L** to fill & submit your login info 
 
 _Note: This does not work in Firefox before version 52._
 
+## Security
+
+Browserpass aims to protect your passwords and computer from malicious or fraudulent websites.
+
+* To protect against phishing, only passwords matching the origin hostname are suggested or selected without an explicit search term.
+* To minimize attack surface, the website is not allowed to trigger any extension action without user invocation.
+* Only data from the selected password is made available to the website.
+* Given full control of the non-native component of the extension, the attacker can extract passwords stored in the configured repository, but can not obtain files elsewhere on the filesystem or reach code execution.
+
 ## Contributing
 
 Check out [Contributing](CONTRIBUTING.md).
