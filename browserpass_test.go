@@ -31,8 +31,8 @@ func TestOtp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if login.otpLabel != "totp-secret" {
-		t.Errorf("otpLabel is '%s', expected '%s'", login.otpLabel, "totp-secret")
+	if login.OTPLabel != "totp-secret" {
+		t.Errorf("OTPLabel is '%s', expected '%s'", login.OTPLabel, "totp-secret")
 	}
 
 	o, err := twofactor.NewGoogleTOTP("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ")
