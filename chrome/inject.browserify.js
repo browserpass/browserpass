@@ -77,7 +77,7 @@
   update(field(USERNAME_FIELDS), login.u);
 
   if (login.digits) {
-    alert(login.label != "" ? login.label + ": " + login.digits : login.digits);
+    alert((login.label || "OTP") + ": " + login.digits);
   }
 
   var password_inputs = queryAllVisible(d, PASSWORD_FIELDS, form());
