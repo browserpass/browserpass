@@ -43,8 +43,7 @@ function view() {
     }
   }
 
-  return [
-    m('div.container', { onkeydown: keyHandler }, [
+  return m('div.container', { onkeydown: keyHandler }, [
       // search form
       m("div.search", [
         m(
@@ -72,8 +71,7 @@ function view() {
 
       // results
       m("div.results", results)
-    ])
-  ];
+    ]);
 }
 
 function submitSearchForm(e) {
