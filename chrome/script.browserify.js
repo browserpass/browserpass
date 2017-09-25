@@ -44,33 +44,35 @@ function view() {
   }
 
   return [
-    // search form
-    m("div.search", { onkeydown: keyHandler }, [
-      m(
-        "form",
-        {
-          onsubmit: submitSearchForm
-        },
-        [
-          m("input", {
-            type: "text",
-            id: "search-field",
-            name: "s",
-            placeholder: "Search password..",
-            autocomplete: "off",
-            autofocus: "on"
-          }),
-          m("input", {
-            type: "submit",
-            value: "Search",
-            style: "display: none;"
-          })
-        ]
-      )
-    ]),
+    m('div.container', { onkeydown: keyHandler }, [
+      // search form
+      m("div.search", [
+        m(
+          "form",
+          {
+            onsubmit: submitSearchForm
+          },
+          [
+            m("input", {
+              type: "text",
+              id: "search-field",
+              name: "s",
+              placeholder: "Search password..",
+              autocomplete: "off",
+              autofocus: "on"
+            }),
+            m("input", {
+              type: "submit",
+              value: "Search",
+              style: "display: none;"
+            })
+          ]
+        )
+      ]),
 
-    // results
-    m("div.results", { onkeydown: keyHandler }, results)
+      // results
+      m("div.results", results)
+    ])
   ];
 }
 
