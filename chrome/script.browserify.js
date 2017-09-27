@@ -167,9 +167,9 @@ function keyHandler(e) {
 
 function switchFocus(firstSelector, nextNodeAttr) {
   var searchField = document.getElementById('search-field');
-  var newActive = document.activeElement !== searchField ?
-      document.querySelector(firstSelector) :
-      document.activeElement[nextNodeAttr];
+  var newActive = document.activeElement !== searchField
+      ? document.querySelector(firstSelector)
+      : document.activeElement[nextNodeAttr];
 
   if (newActive) {
     newActive.focus();
