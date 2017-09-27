@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "browserify": "^13.3.0",
-    "mithril": "^0.2.5"
+    "mithril": "^1.1.4"
   }
 }
