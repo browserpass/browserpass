@@ -93,7 +93,7 @@ func Run(stdin io.Reader, stdout io.Writer, s pass.Store) error {
 	}
 }
 
-func detectGPGBin() (string, []string, error) {
+func detectGPGBin() (string, error) {
 	binPriorityList := []string{
 		"gpg2", "/bin/gpg2", "/usr/bin/gpg2", "/usr/local/bin/gpg2",
 		"gpg", "/bin/gpg", "/usr/bin/gpg", "/usr/local/bin/gpg",
@@ -109,26 +109,20 @@ func detectGPGBin() (string, []string, error) {
 	}
 
 	if binToUse == "" {
-		return "", nil, errors.New("Unable to detect the location of gpg binary")
+		return "", errors.New("Unable to detect the location of gpg binary")
 	}
 
-	opts := []string{"--decrypt", "--yes", "--quiet"}
-	if binToUse[len(binToUse)-1] == '2' {
-		opts = append(opts, "--use-agent", "--batch")
-	}
-
-	// Tell gpg to read from stdin
-	opts = append(opts, "-")
-
-	return binToUse, opts, nil
+	return binToUse, nil
 }
 
 // readLoginGPG reads a encrypted login from r using the system's GPG binary.
 func readLoginGPG(r io.Reader) (*Login, error) {
-	gpgbin, opts, err := detectGPGBin()
+	gpgbin, err := detectGPGBin()
 	if err != nil {
 		return nil, err
 	}
+
+	opts := []string{"--decrypt", "--yes", "--quiet", "--batch", "-"}
 
 	// Run gpg
 	cmd := exec.Command(gpgbin, opts...)
