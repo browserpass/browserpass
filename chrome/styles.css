@@ -46,6 +46,7 @@ body{
   background-color: white;
   background-size: 16px 16px;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .login:last-of-type{
