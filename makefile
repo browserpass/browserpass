@@ -2,6 +2,7 @@ SHELL := /usr/bin/env bash
 CHROME := $(shell which google-chrome 2>/dev/null || which google-chrome-stable 2>/dev/null || which chromium 2>/dev/null || which chromium-browser 2>/dev/null || which chrome 2>/dev/null)
 PEM := $(shell find . -name "chrome-browserpass.pem")
 JS_OUTPUT := chrome/script.js chrome/inject.js
+BROWSERIFY := ./node_modules/.bin/browserify
 
 all: deps js browserpass
 
@@ -22,10 +23,10 @@ js: $(JS_OUTPUT)
 	cp chrome/{*.html,*.css,*.js,*.png,*.svg} firefox/
 
 chrome/script.js: chrome/script.browserify.js
-	browserify chrome/script.browserify.js -o chrome/script.js
+	$(BROWSERIFY) chrome/script.browserify.js -o chrome/script.js
 
 chrome/inject.js: chrome/inject.browserify.js
-	browserify chrome/inject.browserify.js -o chrome/inject.js
+	$(BROWSERIFY) chrome/inject.browserify.js -o chrome/inject.js
 
 browserpass: cmd/browserpass/ pass/ browserpass.go
 	go build -o $@ ./cmd/browserpass
