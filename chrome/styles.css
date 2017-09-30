@@ -44,6 +44,7 @@ body{
   text-align: left;
   background: no-repeat url('icon-key.svg') left 8px center;
   background-color: white;
+  color: black;
   background-size: 16px 16px;
   line-height: 1.2;
   white-space: nowrap;
