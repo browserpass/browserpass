@@ -15,6 +15,8 @@ body{
   border-bottom: 1px solid #bbb;
   background: url( "icon-search.svg") center right 6px no-repeat;
   background-size: 16px 16px;
+  background-color: white;
+  color: black;
   padding-right: 20px;
 }
 
