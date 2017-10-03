@@ -4,7 +4,8 @@ var m = require("mithril");
 var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
-var logins = null;
+var logins;
+var error;
 var domain, urlDuringSearch;
 
 m.mount(document.getElementById("mount"), { view: view });
@@ -19,10 +20,11 @@ function view() {
 
   if (searching) {
     results = m("div.loader");
-  } else if (logins !== null) {
-    if (typeof logins === "undefined") {
-      results = m("div.status-text", "Error talking to Browserpass host");
-    } else if (logins.length === 0) {
+  } else if (error) {
+    results = m("div.status-text", "Error: " + error);
+    error = undefined;
+  } else if (logins) {
+    if (logins.length === 0) {
       results = m(
         "div.status-text",
         m.trust(`No passwords found for <strong>${domain}</strong>.`)
@@ -107,7 +109,8 @@ function searchPassword(_domain) {
     { action: "search", domain: _domain },
     function(response) {
       if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError);
+        error = chrome.runtime.lastError.message;
+        console.error(error);
       }
 
       searching = false;
@@ -145,7 +148,13 @@ function getLoginData() {
     { action: "login", entry: this, urlDuringSearch: urlDuringSearch },
     function(response) {
       searching = false;
-      window.close();
+
+      if (response.error) {
+        error = response.error;
+        m.redraw();
+      } else {
+        window.close();
+      }
     }
   );
 }

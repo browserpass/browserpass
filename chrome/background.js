@@ -30,7 +30,9 @@ function onMessage(request, sender, sendResponse) {
       { action: "get", entry: request.entry },
       function(response) {
         if (chrome.runtime.lastError) {
-          console.log(chrome.runtime.lastError);
+          var error = chrome.runtime.lastError.message;
+          console.error(error);
+          sendResponse({ status: "ERROR", error: error });
         }
 
         chrome.tabs.query({ currentWindow: true, active: true }, function(
@@ -41,8 +43,12 @@ function onMessage(request, sender, sendResponse) {
             fillLoginForm(response, request.urlDuringSearch);
           }
         });
-        sendResponse();
+
+        sendResponse({ status: "OK" });
       }
     );
+
+    // Need to return true if we are planning to sendResponse asynchronously
+    return true;
   }
 }
