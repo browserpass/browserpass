@@ -167,7 +167,7 @@ function keyHandler(e) {
 
 function switchFocus(firstSelector, nextNodeAttr) {
   var searchField = document.getElementById('search-field');
-  var newActive = document.activeElement !== searchField
+  var newActive = document.activeElement === searchField
       ? document.querySelector(firstSelector)
       : document.activeElement[nextNodeAttr];
 
@@ -185,6 +185,7 @@ function oncreate() {
 
   // FireFox probably prevents `focus()` calls for some time
   // after extension is rendered.
+  searchField.focus();
   window.setTimeout(function() {
     if (searchField) {
       searchField.focus();
