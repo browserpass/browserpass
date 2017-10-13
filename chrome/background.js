@@ -21,6 +21,19 @@ function fillLoginForm(login) {
       });
     }
   );
+
+  if (login.digits) {
+    chrome.tabs.executeScript(
+      {
+        file: "/inject_otp.js"
+      },
+      function() {
+        chrome.tabs.executeScript({
+          code: `browserpassDisplayOTP(${loginParam});`
+        });
+      }
+    );
+  }
 }
 
 function onMessage(request, sender, sendResponse) {

@@ -35,5 +35,8 @@
         "default": "Ctrl+Shift+L"
       }
     }
-  }
+  },
+  "web_accessible_resources": [
+    "otp.html"
+  ]
 }

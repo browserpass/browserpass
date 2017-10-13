@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  padding: 8px;
+  width: max-content;
+  font-family: monospace;
+}
+
+#otp {
+  text-align: center;
+  border: 1px solid #888888;
+  border-radius: 2px;
+}

@@ -206,10 +206,6 @@ window.browserpassFillForm = function(login, autoSubmit) {
   update(USERNAME_FIELDS, login.u);
   update(PASSWORD_FIELDS, login.p);
 
-  if (login.digits) {
-    alert((login.label || "OTP") + ": " + login.digits);
-  }
-
   var password_inputs = queryAllVisible(document, PASSWORD_FIELDS, form());
   if (password_inputs.length > 1) {
     // There is likely a field asking for OTP code, so do not submit form just yet
