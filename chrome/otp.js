@@ -32,6 +32,6 @@ otpCopy.onclick = function() {
 }
 
 otpDismiss.onclick = function() {
-  window.parent.postMessage({ action: "dismiss" }, "*");
   chrome.runtime.sendMessage({ action: "dismissOTP" });
+  window.parent.postMessage({ action: "dismiss" }, "*");
 }
