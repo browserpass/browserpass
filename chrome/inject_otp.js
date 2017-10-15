@@ -1,5 +1,6 @@
 window.browserpassDisplayOTP = function(login) {
   iframe = document.createElement("iframe");
+  iframe.id = "browserpass-otp-iframe";
   iframe.src = chrome.runtime.getURL("otp.html");
   iframe.style = `
     position: fixed;
@@ -30,10 +31,14 @@ window.browserpassDisplayOTP = function(login) {
     }
 
     if (event.data.action == "dismiss") {
-      document.body.removeChild(iframe);
+      iframe.remove();
       window.removeEventListener("message", receiveMessage);
     }
   };
 
+  var oldIframe = document.getElementById("browserpass-otp-iframe")
+  if (oldIframe != null) {
+    oldIframe.remove();
+  }
   document.body.appendChild(iframe);
 }
