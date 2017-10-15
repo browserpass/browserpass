@@ -2,6 +2,7 @@ window.browserpassDisplayOTP = function(login) {
   iframe = document.createElement("iframe");
   iframe.id = "browserpass-otp-iframe";
   iframe.src = chrome.runtime.getURL("otp.html");
+  iframe.scrolling = "no";
   iframe.style = `
     position: fixed;
     top: 0;
@@ -14,6 +15,7 @@ window.browserpassDisplayOTP = function(login) {
     border-right: none;
     box-sizing: content-box;
     z-index: 1000000;
+    overflow: hidden;
     visibility: hidden;
   `;
 
