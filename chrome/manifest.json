@@ -23,6 +23,7 @@
     "default_popup": "content.html"
   },
   "permissions": [
+    "tabs",
     "activeTab",
     "nativeMessaging",
     "storage",
