@@ -13,6 +13,7 @@ window.browserpassDisplayOTP = function(login) {
     border-right: none;
     box-sizing: content-box;
     z-index: 1000000;
+    display: none;
   `;
 
   window.addEventListener("message", receiveMessage, false);
@@ -22,6 +23,8 @@ window.browserpassDisplayOTP = function(login) {
     }
 
     if (event.data.action == "resize") {
+      iframe.style.display = "block";
+
       iframe.width = event.data.payload.width;
       iframe.height = event.data.payload.height;
     }

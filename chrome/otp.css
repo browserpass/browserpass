@@ -3,10 +3,16 @@ body {
   padding: 8px;
   width: max-content;
   font-family: monospace;
+  font-size: 1em;
 }
 
 #otp {
   text-align: center;
   border: 1px solid #888888;
   border-radius: 2px;
+}
+
+#copy-icon {
+  height: 1em;
+  vertical-align: middle;
 }

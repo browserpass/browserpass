@@ -1,5 +1,6 @@
 var otpInput = document.getElementById("otp");
 var otpLabel = document.getElementById("label");
+var otpCopy = document.getElementById("copy");
 var otpDismiss = document.getElementById("dismiss");
 
 window.addEventListener("message", receiveMessage, false);
@@ -21,8 +22,13 @@ window.onload = function() {
   window.parent.postMessage({ action: "load" }, "*");
 }
 
-otpInput.onclick = function() {
-  this.select();
+document.body.onclick = function() {
+  otpInput.select();
+}
+
+otpCopy.onclick = function() {
+  otpInput.select();
+  document.execCommand("copy");
 }
 
 otpDismiss.onclick = function() {
