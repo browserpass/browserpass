@@ -2,10 +2,13 @@
 
 var app = "com.dannyvankooten.browserpass";
 
+var tabLogins = {};
+
 chrome.runtime.onMessage.addListener(onMessage);
+chrome.tabs.onUpdated.addListener(onTabUpdated);
 
 // fill login form & submit
-function fillLoginForm(login) {
+function fillLoginForm(login, tabId) {
   const loginParam = JSON.stringify(login);
   const autoSubmitParam = JSON.stringify(localStorage.getItem("autoSubmit"));
 
@@ -23,17 +26,26 @@ function fillLoginForm(login) {
   );
 
   if (login.digits) {
-    chrome.tabs.executeScript(
-      {
-        file: "/inject_otp.js"
-      },
-      function() {
-        chrome.tabs.executeScript({
-          code: `browserpassDisplayOTP(${loginParam});`
-        });
-      }
-    );
+    tabLogins[tabId] = loginParam;
+    displayOTP(tabId);
   }
+}
+
+function displayOTP(tabId) {
+  chrome.tabs.executeScript(
+    tabId,
+    {
+      file: "/inject_otp.js"
+    },
+    function() {
+      chrome.tabs.executeScript(
+        tabId,
+        {
+          code: `browserpassDisplayOTP(${tabLogins[tabId]});`
+        }
+      );
+    }
+  );
 }
 
 function onMessage(request, sender, sendResponse) {
@@ -53,7 +65,7 @@ function onMessage(request, sender, sendResponse) {
         ) {
           // do not send login data to page if URL changed during search.
           if (tabs[0].url == request.urlDuringSearch) {
-            fillLoginForm(response, request.urlDuringSearch);
+            fillLoginForm(response, tabs[0].id);
           }
         });
 
@@ -63,5 +75,15 @@ function onMessage(request, sender, sendResponse) {
 
     // Need to return true if we are planning to sendResponse asynchronously
     return true;
+  }
+
+  if (request.action == "dismissOTP" && sender.tab.id in tabLogins) {
+    delete tabLogins[sender.tab.id];
+  }
+}
+
+function onTabUpdated(tabId, changeInfo, tab) {
+  if (changeInfo.status == "complete" && tabId in tabLogins) {
+    displayOTP(tabId);
   }
 }
