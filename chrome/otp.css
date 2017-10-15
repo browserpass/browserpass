@@ -2,14 +2,30 @@ body {
   margin: 0;
   padding: 8px;
   width: max-content;
+  width: -moz-max-content;
   font-family: monospace;
   font-size: 1em;
+  white-space: nowrap;
+}
+
+button {
+  background: #eeeeee;
+  color: black;
+  border: 1px solid #888888;
+  border-radius: 2px;
+  padding: 1px 6px;
+}
+
+button:focus {
+  background: #cccccc;
 }
 
 #otp {
   text-align: center;
   border: 1px solid #888888;
   border-radius: 2px;
+  background: white;
+  color: black;
 }
 
 #copy-icon {

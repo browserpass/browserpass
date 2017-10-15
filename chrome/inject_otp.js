@@ -14,7 +14,7 @@ window.browserpassDisplayOTP = function(login) {
     border-right: none;
     box-sizing: content-box;
     z-index: 1000000;
-    display: none;
+    visibility: hidden;
   `;
 
   window.addEventListener("message", receiveMessage, false);
@@ -24,7 +24,7 @@ window.browserpassDisplayOTP = function(login) {
     }
 
     if (event.data.action == "resize") {
-      iframe.style.display = "block";
+      iframe.style.visibility = "visible";
 
       iframe.width = event.data.payload.width;
       iframe.height = event.data.payload.height;
