@@ -42,9 +42,17 @@ body {
 
 .copy {
   width: 32px;
-  background: no-repeat url('icon-key.svg') center;
-  background-size: 16px 16px;
   border: 0;
+}
+
+.username {
+  background: no-repeat url('icon-user-copy.svg') center;
+  background-size: 16px 16px;
+}
+
+.password {
+  background: no-repeat url('icon-key-copy.svg') center;
+  background-size: 16px 16px;
 }
 
 .login {
