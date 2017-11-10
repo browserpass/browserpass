@@ -49,12 +49,12 @@ function view() {
             ),
             m("button.copy.username",
               {
-                onclick: function(t){alert("test username")}
+                onclick: usernameToClipboard.bind(l)
               }
             ),
             m("button.copy.password",
               {
-                onclick: function(t){alert("test password")}
+                onclick: passwordToClipboard.bind(l)
               }
             )
           ]
@@ -176,6 +176,36 @@ function getLoginData() {
       }
     }
   );
+}
+
+function usernameToClipboard() {
+  toClipboard("username");
+  window.close();
+}
+
+function passwordToClipboard() {
+  toClipboard("password");
+  window.close();
+}
+
+function toClipboard(s){
+  m.render(
+    document.getElementById("clipboard-container"),
+    m(
+      "input#clipboard",
+      {
+        type: "text",
+        value: s
+      }
+    )
+  );
+  var c = document.getElementById("clipboard");
+  c.select();
+  document.execCommand("copy");
+  c.blur();
+  m.render(
+    document.getElementById("clipboard-container")
+  )
 }
 
 // This function uses regular DOM
