@@ -179,7 +179,10 @@ function getLoginData() {
 }
 
 function usernameToClipboard() {
-  toClipboard("username");
+  var username = this.split("/");
+  username = username[username.length - 1];
+  toClipboard(username);
+  console.log(username);
   window.close();
 }
 
