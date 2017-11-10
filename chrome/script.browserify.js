@@ -30,9 +30,9 @@ function view() {
         m.trust(`No passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
-      results = logins.map(function(login) {
+      results = logins.map(function(l) {
         let selector = "button.login";
-        let options = { onclick: getLoginData.bind(login) };
+        let options = { onclick: getLoginData.bind(l) };
 
         let faviconUrl = getFaviconUrl(domain);
         if (faviconUrl) {
@@ -40,7 +40,25 @@ function view() {
           options.style = `background-image: url('${faviconUrl}')`;
         }
 
-        return m(selector, options, login);
+        return m(
+          "div.entry",
+          [
+            m(selector,
+              options,
+              l
+            ),
+            m("button.copy.username",
+              {
+                onclick: function(t){alert("test username")}
+              }
+            ),
+            m("button.copy.password",
+              {
+                onclick: function(t){alert("test password")}
+              }
+            )
+          ]
+        );
       });
     }
   }

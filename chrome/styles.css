@@ -33,10 +33,21 @@ body {
   min-width: 160px;
 }
 
+.entry {
+  display:flex;
+  flex-flow: row;
+}
+
+.copy {
+  flex: 1;
+  min-width: 32px;
+  background: no-repeat url('icon-key.svg') center;
+  background-size: 16px 16px;
+  border: 0;
+}
+
 .login {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
+  flex: 4;
   -webkit-appearance: none;
   -moz-appearance: none;
   padding: 12px;
@@ -61,8 +72,8 @@ body {
   border-bottom: 0;
 }
 
-.login:hover,
-.login:focus {
+.entry>*:hover,
+.entry>*:focus {
   outline: 0;
   background-color: #eee;
 }
