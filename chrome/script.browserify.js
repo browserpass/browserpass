@@ -187,8 +187,27 @@ function usernameToClipboard() {
 }
 
 function passwordToClipboard() {
-  toClipboard("password");
-  window.close();
+  chrome.runtime.sendNativeMessage(
+    app,
+    {action: "get", entry: this},
+    function(response) {
+      if(chrome.runtime.lastError) {
+        error = chrome.runtime.lastError.message;
+        m.redraw();
+      }
+
+      chrome.tabs.query(
+        {lastFocusedWindow: true, active: true},
+        function(tabs) {
+          //do not copy login data if URL changed during search.
+          if(tabs[0].url == urlDuringSearch) {
+            toClipboard(response.p);
+            window.close();
+          }
+        }
+      );
+    }
+  )
 }
 
 function toClipboard(s){
