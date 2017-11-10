@@ -49,12 +49,12 @@ function view() {
             ),
             m("button.copy.username",
               {
-                onclick: usernameToClipboard.bind(l)
+                onclick: loginToClipboard.bind({entry: l, what: "username"})
               }
             ),
             m("button.copy.password",
               {
-                onclick: passwordToClipboard.bind(l)
+                onclick: loginToClipboard.bind({entry: l, what: "password"})
               }
             )
           ]
@@ -178,17 +178,11 @@ function getLoginData() {
   );
 }
 
-function usernameToClipboard() {
-  var username = this.split("/");
-  username = username[username.length - 1];
-  toClipboard(username);
-  window.close();
-}
-
-function passwordToClipboard() {
+function loginToClipboard() {
+  var what = this.what;
   chrome.runtime.sendNativeMessage(
     app,
-    {action: "get", entry: this},
+    {action: "get", entry: this.entry},
     function(response) {
       if(chrome.runtime.lastError) {
         error = chrome.runtime.lastError.message;
@@ -200,7 +194,11 @@ function passwordToClipboard() {
         function(tabs) {
           //do not copy login data if URL changed during search.
           if(tabs[0].url == urlDuringSearch) {
-            toClipboard(response.p);
+            if (what === "password"){
+              toClipboard(response.p);
+            } else if (what === "username"){
+              toClipboard(response.u);
+            }
             window.close();
           }
         }
