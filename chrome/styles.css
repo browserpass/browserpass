@@ -36,24 +36,24 @@ body {
 .entry {
   display:flex;
   flex-flow: row;
+  border: 0;
+  border-bottom: 1px dotted #ccc;
 }
 
 .copy {
-  flex: 1;
-  min-width: 32px;
+  width: 32px;
   background: no-repeat url('icon-key.svg') center;
   background-size: 16px 16px;
   border: 0;
 }
 
 .login {
-  flex: 4;
+  flex: 1;
   -webkit-appearance: none;
   -moz-appearance: none;
   padding: 12px;
   cursor: pointer;
   border: 0;
-  border-bottom: 1px dotted #ccc;
   text-align: left;
   background-color: white;
   color: black;
@@ -68,7 +68,7 @@ body {
   padding-left: 32px;
 }
 
-.login:last-of-type {
+.entry:last-of-type{
   border-bottom: 0;
 }
 
