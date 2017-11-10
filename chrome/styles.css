@@ -101,6 +101,21 @@ body {
   height: 12px;
 }
 
+#clipboard-container {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 0px;
+  height: 0px;
+  z-index: 100;
+  opacity: 0;
+}
+
+#clipboard {
+  width: 1px;
+  height: 1px;
+}
+
 @keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
