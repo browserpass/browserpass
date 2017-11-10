@@ -182,7 +182,6 @@ function usernameToClipboard() {
   var username = this.split("/");
   username = username[username.length - 1];
   toClipboard(username);
-  console.log(username);
   window.close();
 }
 
@@ -251,7 +250,6 @@ function switchFocus(firstSelector, nextNodeAttr) {
       ? document.querySelector(firstSelector)
       : document.activeElement["parentElement"][nextNodeAttr]["firstElementChild"];
 
-  console.log(newActive);
   if (newActive) {
     newActive.focus();
   } else {
