@@ -235,11 +235,11 @@ function toClipboard(s){
 function keyHandler(e) {
   switch (e.key) {
     case "ArrowUp":
-      switchFocus("button.login:last-child", "previousElementSibling");
+      switchFocus("div.entry:last-child > .login", "previousElementSibling");
       break;
 
     case "ArrowDown":
-      switchFocus("button.login:first-child", "nextElementSibling");
+      switchFocus("div.entry:first-child > .login", "nextElementSibling");
       break;
   }
 }
@@ -249,8 +249,9 @@ function switchFocus(firstSelector, nextNodeAttr) {
   var newActive =
     document.activeElement === searchField
       ? document.querySelector(firstSelector)
-      : document.activeElement[nextNodeAttr];
+      : document.activeElement["parentElement"][nextNodeAttr]["firstElementChild"];
 
+  console.log(newActive);
   if (newActive) {
     newActive.focus();
   } else {
