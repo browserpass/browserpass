@@ -30,7 +30,7 @@ Start out by downloading the [latest release package](https://github.com/dannyva
 
 #### Verifying authenticity of the releases
 
-All release files are signed with [this PGP key](https://keybase.io/maximbaz). To verify the signature of a given file, use `$ gpg --verify <file>.sig`
+All release files are signed with [this PGP key](https://keybase.io/maximbaz). To verify the signature of a given file, use `$ gpg --verify <file>.sig`.  It should report `Good signature from "Maxim Baz <pgp@maximbaz.com>"` via RSA Key 8053EB88879A68CB4873D32B011FDC52DA839335 
 
 #### Installing the host application
 
