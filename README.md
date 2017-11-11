@@ -38,6 +38,9 @@ It should report:
 gpg: Signature made <...>
 gpg:                using RSA key 8053EB88879A68CB4873D32B011FDC52DA839335
 gpg: Good signature from "Maxim Baz <...>"
+gpg:                 aka ...
+Primary key fingerprint: EB4F 9E5A 60D3 2232 BB52  150C 12C8 7A28 FEAC 6B20
+     Subkey fingerprint: 8053 EB88 879A 68CB 4873  D32B 011F DC52 DA83 9335
 ```
 
 #### Installing the host application
