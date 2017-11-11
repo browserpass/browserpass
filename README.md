@@ -35,7 +35,7 @@ All release files are signed with [this PGP key](https://keybase.io/maximbaz). T
 It should report: 
 
 ```
-gpg: Signature made <...>
+gpg: Signature made ...
 gpg:                using RSA key 8053EB88879A68CB4873D32B011FDC52DA839335
 gpg: Good signature from "Maxim Baz <...>"
 gpg:                 aka ...
