@@ -2,9 +2,10 @@
 
 set -e
 
-DIR="$( cd "$( dirname "$0" )" && pwd )"
+BIN_DIR="$( cd "$( dirname "$0" )" && pwd )"
+JSON_DIR="$BIN_DIR"
 APP_NAME="com.dannyvankooten.browserpass"
-HOST_FILE="$DIR/browserpass"
+HOST_FILE="$BIN_DIR/browserpass"
 
 # Find target dirs for various browsers & OS'es
 # https://developer.chrome.com/extensions/nativeMessaging#native-messaging-host-location
@@ -13,7 +14,7 @@ OPERATING_SYSTEM=$(uname -s)
 
 case $OPERATING_SYSTEM in
 Linux)
-  HOST_FILE="$DIR/browserpass-linux64"
+  HOST_FILE="$BIN_DIR/browserpass-linux64"
   if [ "$(whoami)" == "root" ]; then
     TARGET_DIR_CHROME="/etc/opt/chrome/native-messaging-hosts"
     TARGET_DIR_CHROMIUM="/etc/chromium/native-messaging-hosts"
@@ -27,7 +28,7 @@ Linux)
   fi
   ;;
 Darwin)
-  HOST_FILE="$DIR/browserpass-darwinx64"
+  HOST_FILE="$BIN_DIR/browserpass-darwinx64"
   if [ "$(whoami)" == "root" ]; then
     TARGET_DIR_CHROME="/Library/Google/Chrome/NativeMessagingHosts"
     TARGET_DIR_CHROMIUM="/Library/Application Support/Chromium/NativeMessagingHosts"
@@ -41,7 +42,7 @@ Darwin)
   fi
   ;;
 OpenBSD)
-  HOST_FILE="$DIR/browserpass-openbsd64"
+  HOST_FILE="$BIN_DIR/browserpass-openbsd64"
   if [ "$(whoami)" == "root" ]; then
     echo "Installing as root not supported."
     exit 1
@@ -52,7 +53,7 @@ OpenBSD)
   TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
   ;;
 FreeBSD)
-  HOST_FILE="$DIR/browserpass-freebsd64"
+  HOST_FILE="$BIN_DIR/browserpass-freebsd64"
   if [ "$(whoami)" == "root" ]; then
     echo "Installing as root not supported"
     exit 1
@@ -68,9 +69,9 @@ FreeBSD)
   ;;
 esac
 
-if [ -e "$DIR/browserpass" ]; then
+if [ -e "$BIN_DIR/browserpass" ]; then
   echo "Detected development binary"
-  HOST_FILE="$DIR/browserpass"
+  HOST_FILE="$BIN_DIR/browserpass"
 fi
 
 echo ""
@@ -120,23 +121,23 @@ ESCAPED_HOST_FILE=${HOST_FILE////\\/}
 if [ "$BROWSER_NAME" == "Chrome" ] || \
    [ "$BROWSER_NAME" == "Chromium" ] || \
    [ "$BROWSER_NAME" == "Vivaldi" ]; then
-  if [ ! -f "$DIR/chrome-host.json" ] || [ ! -f "$DIR/chrome-policy.json" ]; then
-    echo "ERROR: '$DIR/chrome-host.json' or '$DIR/chrome-policy.json' is missing."
+  if [ ! -f "$JSON_DIR/chrome-host.json" ] || [ ! -f "$JSON_DIR/chrome-policy.json" ]; then
+    echo "ERROR: '$JSON_DIR/chrome-host.json' or '$JSON_DIR/chrome-policy.json' is missing."
     echo "If you are running './install.sh' from a release archive, please file a bug."
     echo "If you are running './install.sh' from the source code, make sure to follow CONTRIBUTING.md on how to build first."
     exit 1
   fi
-  cp "$DIR/chrome-host.json" "$TARGET_DIR/$APP_NAME.json"
+  cp "$JSON_DIR/chrome-host.json" "$TARGET_DIR/$APP_NAME.json"
   mkdir -p "$TARGET_DIR"/../policies/managed/
-  cp "$DIR/chrome-policy.json" "$TARGET_DIR/../policies/managed/$APP_NAME.json"
+  cp "$JSON_DIR/chrome-policy.json" "$TARGET_DIR/../policies/managed/$APP_NAME.json"
 else
-  if [ ! -f "$DIR/firefox-host.json" ]; then
-    echo "ERROR: '$DIR/firefox-host.json' is missing."
+  if [ ! -f "$JSON_DIR/firefox-host.json" ]; then
+    echo "ERROR: '$JSON_DIR/firefox-host.json' is missing."
     echo "If you are running './install.sh' from a release archive, please file a bug."
     echo "If you are running './install.sh' from the source code, make sure to follow CONTRIBUTING.md on how to build first."
     exit 1
   fi
-  cp "$DIR/firefox-host.json" "$TARGET_DIR/$APP_NAME.json"
+  cp "$JSON_DIR/firefox-host.json" "$TARGET_DIR/$APP_NAME.json"
 fi
 
 # Replace path to host
