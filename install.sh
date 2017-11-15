@@ -141,7 +141,7 @@ else
 fi
 
 # Replace path to host
-sed -i -e "s/%%replace%%/$ESCAPED_HOST_FILE/" "$TARGET_DIR/$APP_NAME.json"
+sed -i '' -e "s/%%replace%%/$ESCAPED_HOST_FILE/" "$TARGET_DIR/$APP_NAME.json"
 
 # Set permissions for the manifest so that all users can read it.
 chmod o+r "$TARGET_DIR/$APP_NAME.json"
