@@ -2,6 +2,15 @@
 
 set -e
 
+assert_file_exists() {
+  if [ ! -f "$1" ]; then
+    echo "ERROR: '$1' is missing."
+    echo "If you are running './install.sh' from a release archive, please file a bug."
+    echo "If you are running './install.sh' from the source code, make sure to follow CONTRIBUTING.md on how to build first."
+    exit 1
+  fi
+}
+
 BIN_DIR="$( cd "$( dirname "$0" )" && pwd )"
 JSON_DIR="$BIN_DIR"
 APP_NAME="com.dannyvankooten.browserpass"
@@ -114,36 +123,27 @@ echo "Installing $BROWSER_NAME host config"
 # Create config dir if not existing
 mkdir -p "$TARGET_DIR"
 
-# Escape host file
-ESCAPED_HOST_FILE=${HOST_FILE////\\/}
-
-# Copy manifest host config file
-if [ "$BROWSER_NAME" == "Chrome" ] || \
-   [ "$BROWSER_NAME" == "Chromium" ] || \
-   [ "$BROWSER_NAME" == "Vivaldi" ]; then
-  if [ ! -f "$JSON_DIR/chrome-host.json" ] || [ ! -f "$JSON_DIR/chrome-policy.json" ]; then
-    echo "ERROR: '$JSON_DIR/chrome-host.json' or '$JSON_DIR/chrome-policy.json' is missing."
-    echo "If you are running './install.sh' from a release archive, please file a bug."
-    echo "If you are running './install.sh' from the source code, make sure to follow CONTRIBUTING.md on how to build first."
-    exit 1
-  fi
-  cp "$JSON_DIR/chrome-host.json" "$TARGET_DIR/$APP_NAME.json"
-  mkdir -p "$TARGET_DIR"/../policies/managed/
-  cp "$JSON_DIR/chrome-policy.json" "$TARGET_DIR/../policies/managed/$APP_NAME.json"
+if [ "$BROWSER_NAME" == "Firefox" ]; then
+  MANIFEST="$JSON_DIR/firefox-host.json"
 else
-  if [ ! -f "$JSON_DIR/firefox-host.json" ]; then
-    echo "ERROR: '$JSON_DIR/firefox-host.json' is missing."
-    echo "If you are running './install.sh' from a release archive, please file a bug."
-    echo "If you are running './install.sh' from the source code, make sure to follow CONTRIBUTING.md on how to build first."
-    exit 1
-  fi
-  cp "$JSON_DIR/firefox-host.json" "$TARGET_DIR/$APP_NAME.json"
+  MANIFEST="$JSON_DIR/chrome-host.json"
+  POLICY="$JSON_DIR/chrome-policy.json"
 fi
 
-# Replace path to host
-sed -i '' -e "s/%%replace%%/$ESCAPED_HOST_FILE/" "$TARGET_DIR/$APP_NAME.json"
+# Copy native host manifest, filling in binary path
+assert_file_exists "$MANIFEST"
+sed "s/%%replace%%/${HOST_FILE////\\/}/" "$MANIFEST" \
+  > "$TARGET_DIR/$APP_NAME.json"
 
 # Set permissions for the manifest so that all users can read it.
 chmod o+r "$TARGET_DIR/$APP_NAME.json"
+
+# Copy policy file, if any
+if [ -n "$POLICY" ]; then
+  assert_file_exists "$POLICY"
+  POLICY_DIR="$TARGET_DIR"/../policies/managed/
+  mkdir -p "$POLICY_DIR"
+  cp "$POLICY" "$POLICY_DIR/$APP_NAME.json"
+fi
 
 echo "Native messaging host for $BROWSER_NAME has been installed to $TARGET_DIR."
