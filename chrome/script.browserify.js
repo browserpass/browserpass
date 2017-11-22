@@ -49,12 +49,14 @@ function view() {
             ),
             m("button.copy.username",
               {
-                onclick: loginToClipboard.bind({entry: l, what: "username"})
+                onclick: loginToClipboard.bind({entry: l, what: "username"}),
+                tabindex: -1
               }
             ),
             m("button.copy.password",
               {
-                onclick: loginToClipboard.bind({entry: l, what: "password"})
+                onclick: loginToClipboard.bind({entry: l, what: "password"}),
+                tabindex: -1
               }
             )
           ]
