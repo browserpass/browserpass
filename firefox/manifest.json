@@ -20,6 +20,7 @@
     "default_popup": "content.html"
   },
   "permissions": [
+    "clipboardWrite",
     "tabs",
     "activeTab",
     "nativeMessaging",
