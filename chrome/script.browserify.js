@@ -30,9 +30,9 @@ function view() {
         m.trust(`No passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
-      results = logins.map(function(l) {
+      results = logins.map(function(login) {
         let selector = "button.login";
-        let options = { onclick: getLoginData.bind(l) };
+        let options = { onclick: getLoginData.bind(login) };
 
         let faviconUrl = getFaviconUrl(domain);
         if (faviconUrl) {
@@ -45,17 +45,17 @@ function view() {
           [
             m(selector,
               options,
-              l
+              login
             ),
             m("button.copy.username",
               {
-                onclick: loginToClipboard.bind({entry: l, what: "username"}),
+                onclick: loginToClipboard.bind({entry: login, what: "username"}),
                 tabindex: -1
               }
             ),
             m("button.copy.password",
               {
-                onclick: loginToClipboard.bind({entry: l, what: "password"}),
+                onclick: loginToClipboard.bind({entry: login, what: "password"}),
                 tabindex: -1
               }
             )
