@@ -189,25 +189,16 @@ function loginToClipboard() {
       if(chrome.runtime.lastError) {
         error = chrome.runtime.lastError.message;
         m.redraw();
-        return;
-      }
-
-      chrome.tabs.query(
-        {lastFocusedWindow: true, active: true},
-        function(tabs) {
-          //do not copy login data if URL changed during search.
-          if(tabs[0].url == urlDuringSearch) {
-            if (what === "password"){
-              toClipboard(response.p);
-            } else if (what === "username"){
-              toClipboard(response.u);
-            }
-            window.close();
-          }
+      } else {
+        if (what === "password"){
+          toClipboard(response.p);
+        } else if (what === "username"){
+          toClipboard(response.u);
         }
-      );
+        window.close();
+      }
     }
-  )
+  );
 }
 
 function toClipboard(s){
