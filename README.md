@@ -52,7 +52,7 @@ If you installed the Linux host application in a location different from `~/.bro
 
 3. Change the path in `%localappdata%\browserpass\browserpass-firefox.json` (or `-chrome.json`) to point to `browserpass-wsl.bat`
 
-If your GPG key has a password, the host application running under WSL won't be able to unlock it since it can't interactively prompt for the password. This means you can't get decrypt any passwords unless you've already got the key loaded in gpg-agent.
+If your GPG key has a password, the host application running under WSL won't be able to unlock it since it can't interactively prompt for the password. This means you can't decrypt any passwords unless you've already got the key loaded in gpg-agent.
 As a workaround, you can use the key (`pass website.com`) in a WSL terminal to load the key into gpg-agent. Then browserpass will work until gpg-agent times out.
 
 #### Installing the Chrome extension
