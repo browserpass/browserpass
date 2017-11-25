@@ -39,6 +39,16 @@ All release files are signed with [this PGP key](https://keybase.io/maximbaz). T
 
 Installing the binary & registering it with your browser through the installation script is required to allow the browser extension to talk to the local binary application.
 
+#### Installing the host application on Windows through WSL
+
+1. Install the Windows host application (see previous section) as well as the Linux host application (under WSL).
+2. Create `%localappdata%\browserpass\browserpass-linux.bat` with the following contents:
+```
+@echo off
+bash -c ~/browserpass/browserpass-linux64
+```
+3. Change the path in `%localappdata%\browserpass\browserpass-firefox.json` (or `-chrome.json`) to point to `browserpass-linux.bat`
+
 #### Installing the Chrome extension
 
 You can either [install the Chrome extension from the Chrome Web Store](https://chrome.google.com/webstore/detail/browserpass/naepdomgkenhinolocfifgehidddafch) or drag the `chrome-browserpass.crx` file from the release package into the [Chrome Extensions](chrome://extensions) (`chrome://extensions`) page.
