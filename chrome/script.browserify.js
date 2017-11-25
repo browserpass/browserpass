@@ -189,6 +189,7 @@ function loginToClipboard() {
       if(chrome.runtime.lastError) {
         error = chrome.runtime.lastError.message;
         m.redraw();
+        return;
       }
 
       chrome.tabs.query(
