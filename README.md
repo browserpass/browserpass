@@ -41,13 +41,19 @@ Installing the binary & registering it with your browser through the installatio
 
 #### Installing the host application on Windows through WSL
 
+If you already use `pass` under WSL and prefer to have a single copy of your password store, you can use browserpass through WSL as well.
 1. Install the Windows host application (see previous section) as well as the Linux host application (under WSL).
-2. Create `%localappdata%\browserpass\browserpass-linux.bat` with the following contents:
+2. Create `%localappdata%\browserpass\browserpass-wsl.bat` with the following contents:
 ```
 @echo off
-bash -c ~/browserpass/browserpass-linux64
+bash -c ~/.browserpass/browserpass-linux64
 ```
-3. Change the path in `%localappdata%\browserpass\browserpass-firefox.json` (or `-chrome.json`) to point to `browserpass-linux.bat`
+If you installed the Linux host application in a location different from `~/.browserpass`, replace that path in the above script.
+
+3. Change the path in `%localappdata%\browserpass\browserpass-firefox.json` (or `-chrome.json`) to point to `browserpass-wsl.bat`
+
+If your GPG key has a password, the host application running under WSL won't be able to unlock it since it can't interactively prompt for the password. This means you can't get decrypt any passwords unless you've already got the key loaded in gpg-agent.
+As a workaround, you can use the key (`pass website.com`) in a WSL terminal to load the key into gpg-agent. Then browserpass will work until gpg-agent times out.
 
 #### Installing the Chrome extension
 
