@@ -253,16 +253,18 @@ function keyHandler(e) {
 
 function switchFocus(firstSelector, nextNodeAttr) {
   var searchField = document.getElementById("search-field");
-  var newActive =
-    document.activeElement === searchField
-      ? document.querySelector(firstSelector)
-      : document.activeElement["parentElement"][nextNodeAttr]["firstElementChild"];
+  var newActive = searchField;
 
-  if (newActive) {
-    newActive.focus();
+  if(document.activeElement === searchField){
+    newActive = document.querySelector(firstSelector);
   } else {
-    searchField.focus();
+    let tmp = document.activeElement["parentElement"][nextNodeAttr];
+    if (tmp !== null){
+      newActive = tmp["firstElementChild"];
+    }
   }
+
+  newActive.focus();
 }
 
 // The oncreate(vnode) hook is called after a DOM element is created and attached to the document.
