@@ -227,7 +227,7 @@ function toClipboard(s){
   c.blur();
   m.render(
     document.getElementById("clipboard-container")
-  )
+  );
 }
 
 // This function uses regular DOM
