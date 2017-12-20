@@ -144,3 +144,18 @@ func TestDiskStoreSearchSubDirectories(t *testing.T) {
 		t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult[0])
 	}
 }
+
+func TestDiskStorePartSearch(t *testing.T) {
+	store := diskStore{"test_store"}
+	searchResult, err := store.Search("abc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResult) != 3 {
+		t.Fatalf("Found %v results instead of 3", len(searchResult))
+	}
+	expectedResult := []string{"abc.com", "abc.org/user", "abc.org/wiki/user"}
+	if searchResult[0] != expectedResult[0] || searchResult[1] != expectedResult[1] || searchResult[2] != expectedResult[2] {
+		t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
+	}
+}
