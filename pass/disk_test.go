@@ -129,3 +129,18 @@ func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
 		t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
 	}
 }
+
+func TestDiskStoreSearchSubDirectories(t *testing.T) {
+	store := diskStore{"test_store"}
+	searchResult, err := store.Search("debian.org")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResult) != 1 {
+		t.Fatalf("Found %v results instead of 1", len(searchResult))
+	}
+	expectedResult := []string{"debian.org/wiki/user"}
+	if searchResult[0] != expectedResult {
+		t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult[0])
+	}
+}
