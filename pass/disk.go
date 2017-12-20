@@ -58,7 +58,7 @@ func (s *diskStore) Search(query string) ([]string, error) {
 		return nil, err
 	}
 
-	matches3, err := zglob.GlobFollowSymlinks(s.path + "/**/" + query + "/*/*.gpg")
+	matches3, err := zglob.GlobFollowSymlinks(s.path + "/**/" + query + "*/*/*.gpg")
 	if err != nil {
 		return nil, err
 	}
