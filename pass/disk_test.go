@@ -132,30 +132,41 @@ func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
 
 func TestDiskStoreSearchSubDirectories(t *testing.T) {
 	store := diskStore{"test_store"}
-	searchResult, err := store.Search("abc.org")
-	if err != nil {
-		t.Fatal(err)
+	searchTermsMatches := map[string][]string{
+		"abc.org": []string{"abc.org/user3", "abc.org/wiki/user4", "abc.org/wiki/work/user5"},
+		"wiki":    []string{"abc.org/wiki/user4", "abc.org/wiki/work/user5"},
+		"work":    []string{"abc.org/wiki/work/user5"},
 	}
-	if len(searchResult) != 2 {
-		t.Fatalf("Found %v results instead of 2", len(searchResult))
-	}
-	expectedResult := []string{"abc.org/user", "abc.org/wiki/user"}
-	if searchResult[0] != expectedResult[0] || searchResult[1] != expectedResult[1] {
-		t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
+
+	for term, expectedResult := range searchTermsMatches {
+		searchResult, err := store.Search(term)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(searchResult) != len(expectedResult) {
+			t.Fatalf("For term %v found %v results (%v) instead of %v (%v)", term, len(searchResult), searchResult, len(expectedResult), expectedResult)
+		}
+		for i := 0; i < len(expectedResult); i++ {
+			if searchResult[i] != expectedResult[i] {
+				t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
+			}
+		}
 	}
 }
 
 func TestDiskStorePartSearch(t *testing.T) {
 	store := diskStore{"test_store"}
-	searchResult, err := store.Search("abc")
+	searchResult, err := store.Search("ab")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(searchResult) != 3 {
-		t.Fatalf("Found %v results instead of 3", len(searchResult))
+	if len(searchResult) != 4 {
+		t.Fatalf("Found %v results instead of 4", len(searchResult))
 	}
-	expectedResult := []string{"abc.com", "abc.org/user", "abc.org/wiki/user"}
-	if searchResult[0] != expectedResult[0] || searchResult[1] != expectedResult[1] || searchResult[2] != expectedResult[2] {
-		t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
+	expectedResult := []string{"abc.com", "abc.org/user3", "abc.org/wiki/user4", "abc.org/wiki/work/user5"}
+	for i := 0; i < len(expectedResult); i++ {
+		if searchResult[i] != expectedResult[i] {
+			t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
+		}
 	}
 }
