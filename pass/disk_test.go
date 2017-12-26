@@ -130,13 +130,12 @@ func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
 	}
 }
 
-// Tests for 2nd level subdirectory disabled.
 func TestDiskStoreSearchSubDirectories(t *testing.T) {
 	store := diskStore{"test_store"}
 	searchTermsMatches := map[string][]string{
-		"abc.org": []string{"abc.org/user3", "abc.org/wiki/user4"/*, "abc.org/wiki/work/user5"*/},
+		"abc.org": []string{"abc.org/user3", "abc.org/wiki/user4", "abc.org/wiki/work/user5"},
 		"wiki":    []string{"abc.org/wiki/user4", "abc.org/wiki/work/user5"},
-//		"work":    []string{"abc.org/wiki/work/user5"},
+		"work":    []string{"abc.org/wiki/work/user5"},
 	}
 
 	for term, expectedResult := range searchTermsMatches {
@@ -155,17 +154,16 @@ func TestDiskStoreSearchSubDirectories(t *testing.T) {
 	}
 }
 
-// Tests for 2nd level subdirectory disabled.
 func TestDiskStorePartSearch(t *testing.T) {
 	store := diskStore{"test_store"}
 	searchResult, err := store.Search("ab")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(searchResult) != 3 {
-		t.Fatalf("Found %v results instead of 3", len(searchResult))
+	if len(searchResult) != 4 {
+		t.Fatalf("Found %v results instead of 4", len(searchResult))
 	}
-	expectedResult := []string{"abc.com", "abc.org/user3", "abc.org/wiki/user4"/*, "abc.org/wiki/work/user5"*/}
+	expectedResult := []string{"abc.com", "abc.org/user3", "abc.org/wiki/user4", "abc.org/wiki/work/user5"}
 	for i := 0; i < len(expectedResult); i++ {
 		if searchResult[i] != expectedResult[i] {
 			t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)

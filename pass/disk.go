@@ -48,7 +48,7 @@ func (s *diskStore) Search(query string) ([]string, error) {
 	//	2. DOMAIN.gpg
 	//	3. DOMAIN/SUBDIRECTORY/USERNAME.gpg
 
-	matches, err := zglob.GlobFollowSymlinks(s.path + "/**/" + query + "*/*.gpg")
+	matches, err := zglob.GlobFollowSymlinks(s.path + "/**/" + query + "*/**/*.gpg")
 	if err != nil {
 		return nil, err
 	}
@@ -58,13 +58,7 @@ func (s *diskStore) Search(query string) ([]string, error) {
 		return nil, err
 	}
 
-	matches3, err := zglob.GlobFollowSymlinks(s.path + "/**/" + query + "*/*/*.gpg")
-	if err != nil {
-		return nil, err
-	}
-
 	items := append(matches, matches2...)
-	items = append(items, matches3...)
 	for i, path := range items {
 		item, err := filepath.Rel(s.path, path)
 		if err != nil {
