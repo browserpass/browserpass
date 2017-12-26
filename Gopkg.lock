@@ -10,19 +10,26 @@
 [[projects]]
   branch = "master"
   name = "github.com/mattn/go-zglob"
-  packages = [".","fastwalk"]
-  revision = "4b74c24375b3b1ee226867156e01996f4e19a8d6"
+  packages = [
+    ".",
+    "fastwalk"
+  ]
+  revision = "cb5263554791976bf8cdd747c82355370893ecd7"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "4fe5d7925040acd225bf9c7cee65e82d07f06bff"
+  revision = "83801418e1b59fb1880e363299581ee543af32ca"
 
 [[projects]]
   branch = "master"
   name = "rsc.io/qr"
-  packages = [".","coding","gf256"]
+  packages = [
+    ".",
+    "coding",
+    "gf256"
+  ]
   revision = "48b2ede4844e13f1a2b7ce4d2529c9af7e359fc5"
 
 [solve-meta]
