@@ -10,7 +10,7 @@ function restore_options() {
     autoSubmit = false;
   } else {
     // Load the default
-    autoSubmit = false;
+    autoSubmit = true;
   }
   document.getElementById("auto-submit").checked = autoSubmit;
 }
