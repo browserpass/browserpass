@@ -15,6 +15,27 @@ chrome.tabs.query({ lastFocusedWindow: true, active: true }, function(tabs) {
   init(tabs[0]);
 });
 
+function toggleAutoSubmit() {
+  var val = getAutoSubmit();
+  var newVal = true;
+  if (val) {
+    newVal = false;
+  }
+  setAutoSubmit(newVal);
+}
+
+function getAutoSubmit() {
+  var val = localStorage.getItem("autoSubmit")
+  if (val == true || val == "true") {
+    return true;
+  }
+  return false;
+}
+
+function setAutoSubmit(val) {
+  localStorage.setItem("autoSubmit", val)
+}
+
 function view() {
   var results = "";
 
@@ -55,6 +76,17 @@ function view() {
     }
   }
 
+  var autoSubmitOpts = {
+    type: "checkbox",
+    id: "auto-submit-checkbox",
+    name:"auto-submit",
+    onclick: toggleAutoSubmit
+  };
+  var autoSubmitParam = getAutoSubmit();
+  if (autoSubmitParam == true) {
+     autoSubmitOpts.checked = true;
+  }
+
   return m("div.container", { onkeydown: keyHandler }, [
     // search form
     m("div.search", [
@@ -72,6 +104,17 @@ function view() {
             autocomplete: "off",
             autofocus: "on"
           }),
+          m("table", [
+            m("tr", [
+              m("td", "Auto Submit"),
+              m("td", [
+                m("label", { class: "switch" }, [
+                  m("input", autoSubmitOpts),
+                  m("span", { class: "slider round" })
+                ])
+              ])
+            ])
+          ]),
           m("input", {
             type: "submit",
             value: "Search",
