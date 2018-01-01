@@ -7,10 +7,18 @@ var tabInfos = {};
 chrome.runtime.onMessage.addListener(onMessage);
 chrome.tabs.onUpdated.addListener(onTabUpdated);
 
+function getAutoSubmit() {
+  var val = localStorage.getItem("autoSubmit")
+  if (val == true || val == "true") {
+    return true;
+  }
+  return false;
+}
+
 // fill login form & submit
 function fillLoginForm(login, tab) {
   const loginParam = JSON.stringify(login);
-  const autoSubmitParam = JSON.stringify(localStorage.getItem("autoSubmit"));
+  const autoSubmitParam = getAutoSubmit();
 
   chrome.tabs.executeScript(
     tab.id,
