@@ -5,7 +5,7 @@ function save_options() {
 }
 
 function restore_options() {
-  var autoSubmit = localStorage.getItem("autoSubmit") != "false";
+  var autoSubmit = localStorage.getItem("autoSubmit") == "true";
   document.getElementById("auto-submit").checked = autoSubmit;
 }
 
