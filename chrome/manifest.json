@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "browserpass-ce",
   "description": "Chrome extension for zx2c4's pass (password manager) - Community Edition.",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "author": "Danny van Kooten",
   "homepage_url": "https://github.com/dannyvankooten/browserpass",
   "background": {
@@ -11,12 +11,6 @@
     "scripts": [
       "background.js"
     ]
-  },
-  "options_page": "options.html",
-  "options_ui": {
-    "page": "options.html",
-    "chrome_style": true,
-    "open_in_tab": false
   },
   "browser_action": {
     "default_icon": "icon-lock.png",

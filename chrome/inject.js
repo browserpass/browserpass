@@ -215,7 +215,7 @@ window.browserpassFillForm = function(login, autoSubmit) {
       // Try to submit the form, or focus on the submit button (based on user settings)
       var submit = find(SUBMIT_FIELDS);
       if (submit) {
-        if (autoSubmit == "false") {
+        if (autoSubmit == false) {
           submit.focus();
         } else {
           submit.click();
