@@ -124,10 +124,10 @@ echo "Installing $BROWSER_NAME host config"
 mkdir -p "$TARGET_DIR"
 
 if [ "$BROWSER_NAME" == "Firefox" ]; then
-  MANIFEST="$JSON_DIR/firefox-host.json"
+  MANIFEST="$JSON_DIR/firefox/host.json"
 else
-  MANIFEST="$JSON_DIR/chrome-host.json"
-  POLICY="$JSON_DIR/chrome-policy.json"
+  MANIFEST="$JSON_DIR/chrome/host.json"
+  POLICY="$JSON_DIR/chrome/policy.json"
 fi
 
 # Copy native host manifest, filling in binary path
