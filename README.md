@@ -95,6 +95,33 @@ Browserpass aims to protect your passwords and computer from malicious or fraudu
 * Only data from the selected password is made available to the website.
 * Given full control of the non-native component of the extension, the attacker can extract passwords stored in the configured repository, but can not obtain files elsewhere on the filesystem or reach code execution.
 
+## FAQ
+
+### Chrome/MacOS: "Native host has exited"
+Make sure dependencies are installed, then edit `gpg` config files:
+```
+$ brew install gnupg pinentry-mac
+```
+
+Edit `~/.gnupg/gpg.conf`:
+```
+# Comment out or remove this line if it's there:
+#pinentry-mode loopback
+
+# and add this line:
+use-agent
+```
+
+Add following line to `~/.gnupg/gpg-agent.conf`:
+```
+pinentry-program /usr/local/bin/pinentry-mac
+```
+
+Then restart Chrome, and `gpg-agent`:
+```
+$ gpgconf --kill gpg-agent
+```
+
 ## Contributing
 
 Check out [Contributing](CONTRIBUTING.md).
