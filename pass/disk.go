@@ -1,6 +1,7 @@
 package pass
 
 import (
+	"bufio"
 	"errors"
 	"io"
 	"os"
@@ -8,9 +9,11 @@ import (
 	"sort"
 	"strings"
 
+	"os/exec"
 	"os/user"
 
 	"github.com/mattn/go-zglob"
+	//"github.com/kballard/go-shellquote"
 )
 
 type diskStore struct {
@@ -32,7 +35,6 @@ func defaultStorePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	path := os.Getenv("PASSWORD_STORE_DIR")
 	if path == "" {
 		path = filepath.Join(usr.HomeDir, ".password-store")
@@ -43,6 +45,112 @@ func defaultStorePath() (string, error) {
 }
 
 func (s *diskStore) Search(query string) ([]string, error) {
+	external_cmd := os.Getenv("BROWSERPASS_SEARCH_COMMAND")
+	filter_cmd := os.Getenv("BROWSERPASS_FILTER_COMMAND")
+
+	var res []string
+	var err error
+
+	if filter_cmd != "" {
+		res, err = s.filterSearch(query, filter_cmd)
+	} else if external_cmd == "" {
+		res, err = s.builtinSearch(query)
+	} else {
+		res, err = s.externalSearch(query, external_cmd)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	result := unique(res)
+	sort.Strings(result)
+
+	return result, nil
+}
+
+func (s *diskStore) filterSearch(query, cmd_str string) ([]string, error) {
+	var result []string
+
+	items, err := s.builtinSearch("")
+	if err != nil {
+		return nil, err
+	}
+	// Commands like fzf and grep will have an exit code of 1, causing an error
+	// include single quotes to avoid shell execution issues
+	cmd_str += " '" + query + "' || true"
+	cmd := exec.Command("/bin/sh", "-c", cmd_str)
+
+	ri, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	rc, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	scanner := bufio.NewScanner(rc)
+
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	for _, item := range items {
+		str := item + "\n"
+		ri.Write([]byte(str))
+	}
+
+	ri.Close()
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line != "" {
+			result = append(result, line)
+		}
+	}
+
+	if err := cmd.Wait(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+func (s *diskStore) externalSearch(query, cmd_str string) ([]string, error) {
+	var result []string
+
+	// Commands like fzf and grep will have an exit code of 1, causing an error
+	// include single quotes to avoid shell execution issues
+	cmd_str += " '" + query + "' || true"
+	cmd := exec.Command("/bin/sh", "-c", cmd_str)
+
+	rc, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	scanner := bufio.NewScanner(rc)
+
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line != "" {
+			result = append(result, line)
+		}
+	}
+
+	if err := cmd.Wait(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *diskStore) builtinSearch(query string) ([]string, error) {
 	// Search:
 	// 	1. DOMAIN/USERNAME.gpg
 	//	2. DOMAIN.gpg
@@ -59,6 +167,7 @@ func (s *diskStore) Search(query string) ([]string, error) {
 	}
 
 	items := append(matches, matches2...)
+
 	for i, path := range items {
 		item, err := filepath.Rel(s.path, path)
 		if err != nil {
@@ -76,10 +185,8 @@ func (s *diskStore) Search(query string) ([]string, error) {
 		items = append(items, newItems...)
 	}
 
-	result := unique(items)
-	sort.Strings(result)
+	return items, nil
 
-	return result, nil
 }
 
 func (s *diskStore) Open(item string) (io.ReadCloser, error) {
