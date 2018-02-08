@@ -97,30 +97,47 @@ Browserpass aims to protect your passwords and computer from malicious or fraudu
 
 ## FAQ
 
-### Chrome/MacOS: "Native host has exited"
-Make sure dependencies are installed, then edit `gpg` config files:
+### Does not work on MacOS: "Native host has exited"
+
+First install required dependencies:
+
 ```
 $ brew install gnupg pinentry-mac
 ```
 
-Edit `~/.gnupg/gpg.conf`:
+It is important that you have the `gpg` binary at `/usr/local/bin/gpg`. If you have your `gpg` in another location, create a symlink:
+
+```
+$ sudo ln -s /path/to/your/gpg /usr/local/bin/gpg
+```
+
+If you don't have admin rights to create the symlink, the workaround is to [patch browser launcher](https://github.com/dannyvankooten/browserpass/issues/197#issuecomment-354586602).
+
+Now edit `~/.gnupg/gpg.conf`:
+
 ```
 # Comment out or remove this line if it's there:
-#pinentry-mode loopback
+# pinentry-mode loopback
 
 # and add this line:
 use-agent
 ```
 
-Add following line to `~/.gnupg/gpg-agent.conf`:
+Add the following line to `~/.gnupg/gpg-agent.conf`:
+
 ```
 pinentry-program /usr/local/bin/pinentry-mac
 ```
 
-Then restart Chrome, and `gpg-agent`:
+Then restart `gpg-agent`:
+
 ```
 $ gpgconf --kill gpg-agent
 ```
+
+And finally restart your browser. 
+
+If you still experience the issue, try starting your browser from terminal. If this helps, the issue is likely due to the absence of `/usr/local/bin/gpg`, follow the steps above to make sure it exists.
 
 ## Contributing
 
