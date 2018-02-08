@@ -9,12 +9,15 @@ window.browserpassFillForm = function(login, autoSubmit) {
   ];
   const USERNAME_FIELDS = {
     selectors: [
+      "input[name*=openid i]",
       "input[name*=user i]",
       "input[name*=login i]",
       "input[name*=email i]",
+      "input[id*=openid i]",
       "input[id*=user i]",
       "input[id*=login i]",
       "input[id*=email i]",
+      "input[class*=openid i]",
       "input[class*=user i]",
       "input[class*=login i]",
       "input[class*=email i]",
