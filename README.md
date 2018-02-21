@@ -32,7 +32,7 @@ Start out by downloading the [latest release package](https://github.com/dannyva
 
 All release files are signed with [this PGP key](https://keybase.io/maximbaz). To verify the signature of a given file, use `$ gpg --verify <file>.sig`.
 
-It should report: 
+It should report:
 
 ```
 gpg: Signature made ...
@@ -47,6 +47,7 @@ Primary key fingerprint: EB4F 9E5A 60D3 2232 BB52  150C 12C8 7A28 FEAC 6B20
 
 1. Extract the package to where you would like to have the binary.
 1. Run `./install.sh` (`.\install.ps1` on Windows) to install the native messaging host. If you want a system-wide installation, run the script with `sudo`. For Windows, system-wide installation can be done by running `.\install.ps1` as Administrator and specifying "yes" at the "Install for all users?" prompt.
+	* If you desire a non-interactive installation on a Unix system, pass the name of the browser to the script (i.e. `./install.sh chrome`)
 
 Installing the binary & registering it with your browser through the installation script is required to allow the browser extension to talk to the local binary application.
 
@@ -135,7 +136,7 @@ Then restart `gpg-agent`:
 $ gpgconf --kill gpg-agent
 ```
 
-And finally restart your browser. 
+And finally restart your browser.
 
 If you still experience the issue, try starting your browser from terminal. If this helps, the issue is likely due to the absence of `/usr/local/bin/gpg`, follow the steps above to make sure it exists.
 

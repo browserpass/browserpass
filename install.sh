@@ -15,6 +15,7 @@ BIN_DIR="$( cd "$( dirname "$0" )" && pwd )"
 JSON_DIR="$BIN_DIR"
 APP_NAME="com.dannyvankooten.browserpass"
 HOST_FILE="$BIN_DIR/browserpass"
+BROWSER="$1"
 
 # Find target dirs for various browsers & OS'es
 # https://developer.chrome.com/extensions/nativeMessaging#native-messaging-host-location
@@ -83,37 +84,39 @@ if [ -e "$BIN_DIR/browserpass" ]; then
   HOST_FILE="$BIN_DIR/browserpass"
 fi
 
-echo ""
-echo "Select your browser:"
-echo "===================="
-echo "1) Chrome"
-echo "2) Chromium"
-echo "3) Firefox"
-echo "4) Vivaldi"
-echo -n "1-4: "
-read BROWSER
-echo ""
+if [ -z "$BROWSER" ]; then
+  echo ""
+  echo "Select your browser:"
+  echo "===================="
+  echo "1) Chrome"
+  echo "2) Chromium"
+  echo "3) Firefox"
+  echo "4) Vivaldi"
+  echo -n "1-4: "
+  read BROWSER
+  echo ""
+fi
 
 # Set target dir from user input
 case $BROWSER in
-1)
+1|[Cc]hrome)
   BROWSER_NAME="Chrome"
   TARGET_DIR="$TARGET_DIR_CHROME"
   ;;
-2)
+2|[Cc]hromium)
   BROWSER_NAME="Chromium"
   TARGET_DIR="$TARGET_DIR_CHROMIUM"
   ;;
-3)
+3|[Ff]irefox)
   BROWSER_NAME="Firefox"
   TARGET_DIR="$TARGET_DIR_FIREFOX"
   ;;
-4)
+4|[Vv]ivaldi)
   BROWSER_NAME="Vivaldi"
   TARGET_DIR="$TARGET_DIR_VIVALDI"
   ;;
 *)
-  echo "Invalid selection.  Please select 1-4."
+  echo "Invalid selection. Please select 1-4 or one of the browser names."
   exit 1
   ;;
 esac
