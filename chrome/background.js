@@ -85,6 +85,15 @@ function onMessage(request, sender, sendResponse) {
   if (request.action == "dismissOTP" && sender.tab.id in tabInfos) {
     delete tabInfos[sender.tab.id];
   }
+
+  // allows the local communication to request settings. Returns an
+  // object that has current settings. Update this as new settings
+  // are added (or old ones removed)
+  if (request.action == "getSettings") {
+    const use_fuzzy = localStorage.getItem("use_fuzzy") == "true";
+    const fuzzy_algorithm = localStorage.getItem("fuzzy_algorithm");
+    sendResponse({ use_fuzzy: use_fuzzy, fuzzy_algorithm: fuzzy_algorithm })
+  }
 }
 
 function onTabUpdated(tabId, changeInfo, tab) {
