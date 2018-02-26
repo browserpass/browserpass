@@ -66,7 +66,7 @@ func Run(stdin io.Reader, stdout io.Writer, s pass.Store) error {
 
 		// Since the pass.Store object is created by the wrapper prior to
 		// settings from the browser being made available, we set them here
-		s.SetConfig(nil, &data.Settings.UseFuzzy)
+		s.SetConfig(&data.Settings.UseFuzzy)
 
 		var resp interface{}
 		switch data.Action {

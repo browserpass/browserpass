@@ -45,11 +45,7 @@ func defaultStorePath() (string, error) {
 }
 
 // Set the configuration options for password matching.
-func (s *diskStore) SetConfig(path *string, use_fuzzy *bool) error {
-	if path != nil {
-		//todo validate path exists
-		s.path = *path
-	}
+func (s *diskStore) SetConfig(use_fuzzy *bool) error {
 	if use_fuzzy != nil {
 		s.useFuzzy = *use_fuzzy
 	}
