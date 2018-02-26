@@ -13,6 +13,7 @@ var ErrNotFound = errors.New("pass: not found")
 type Store interface {
 	Search(query string) ([]string, error)
 	Open(item string) (io.ReadCloser, error)
+	GlobSearch(query string) ([]string, error)
 	// Update password store settings on the fly
 	SetConfig(path *string, use_fuzzy *bool) error
 }

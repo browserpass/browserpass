@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strings"
 
-	"fmt"
-
 	"os/user"
 
 	"github.com/mattn/go-zglob"
@@ -17,9 +15,8 @@ import (
 )
 
 type diskStore struct {
-	path           string
-	useFuzzy       bool   // Setting to use the fuzzy matcher or the legacy glob matching
-	fuzzyAlgorithm string // Setting to choose the fuzzy algorithm
+	path     string
+	useFuzzy bool // Setting for FuzzySearch or GlobSearch in manual searches
 }
 
 func NewDefaultStore() (Store, error) {
@@ -28,7 +25,7 @@ func NewDefaultStore() (Store, error) {
 		return nil, err
 	}
 
-	return &diskStore{path, false, ""}, nil
+	return &diskStore{path, false}, nil
 }
 
 func defaultStorePath() (string, error) {
@@ -59,23 +56,21 @@ func (s *diskStore) SetConfig(path *string, use_fuzzy *bool) error {
 	return nil
 }
 
-// Do a search. Will call into the correct algoritm (glob, fuzzy (renstrom) or fuzzy (sahilm)
+// Do a search. Will call into the correct algoritm (glob or fuzzy)
 // based on the settings present in the diskStore struct
 func (s *diskStore) Search(query string) ([]string, error) {
-	// default legacy glob search
+	// default glob search
 	if !s.useFuzzy {
-		fmt.Fprintf(os.Stderr, "Doing globsearch\n")
 		return s.GlobSearch(query)
 	} else {
-		fmt.Fprintf(os.Stderr, "Doing fuzzy\n")
-		return s.sahilmFuzzySerach(query)
+		return s.FuzzySerach(query)
 	}
 }
 
 // Fuzzy searches first get a list of all pass entries by doing a glob search
 // for the empty string, then apply appropriate logic to convert results to
 // a slice of strings, finally returning all of the unique entries.
-func (s *diskStore) sahilmFuzzySerach(query string) ([]string, error) {
+func (s *diskStore) FuzzySerach(query string) ([]string, error) {
 	var items []string
 	file_list, err := s.GlobSearch("")
 	if err != nil {
@@ -90,9 +85,7 @@ func (s *diskStore) sahilmFuzzySerach(query string) ([]string, error) {
 		items = append(items, file_list[match.Index])
 	}
 
-	result := unique(items)
-
-	return result, nil
+	return items, nil
 }
 
 func (s *diskStore) GlobSearch(query string) ([]string, error) {

@@ -90,9 +90,8 @@ function onMessage(request, sender, sendResponse) {
   // object that has current settings. Update this as new settings
   // are added (or old ones removed)
   if (request.action == "getSettings") {
-    const use_fuzzy = localStorage.getItem("use_fuzzy") == "true";
-    const fuzzy_algorithm = localStorage.getItem("fuzzy_algorithm");
-    sendResponse({ use_fuzzy: use_fuzzy, fuzzy_algorithm: fuzzy_algorithm })
+    const use_fuzzy_search = localStorage.getItem("use_fuzzy_search") == "true";
+    sendResponse({ use_fuzzy_search: use_fuzzy_search})
   }
 }
 

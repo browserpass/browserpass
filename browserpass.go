@@ -12,9 +12,6 @@ import (
 	"regexp"
 	"strings"
 
-	"fmt"
-	"os"
-
 	"github.com/dannyvankooten/browserpass/pass"
 	"github.com/dannyvankooten/browserpass/protector"
 	"github.com/gokyle/twofactor"
@@ -36,7 +33,8 @@ var endianness = binary.LittleEndian
 // which options have been selected by the user, and put them in a JSON object
 // which is then passed along with the command over the native messaging api.
 type Config struct {
-	UseFuzzy bool `json:"use_fuzzy"` // If false, use legacy glob search
+	// Manual searches use FuzzySearch if true, GlobSearch otherwise
+	UseFuzzy bool `json:"use_fuzzy_search"`
 }
 
 // msg defines a message sent from a browser extension.
@@ -79,10 +77,7 @@ func Run(stdin io.Reader, stdout io.Writer, s pass.Store) error {
 			}
 			resp = list
 		case "match_domain":
-			fmt.Fprintf(os.Stderr, "Got match domain, data is: %s\n", data.Domain)
-			data.Settings.UseFuzzy = false
-			s.SetConfig(nil, &data.Settings.UseFuzzy)
-			list, err := s.Search(data.Domain)
+			list, err := s.GlobSearch(data.Domain)
 			if err != nil {
 				return err
 			}
