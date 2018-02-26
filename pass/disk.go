@@ -11,8 +11,6 @@ import (
 	"os/user"
 
 	"github.com/mattn/go-zglob"
-	// Fuzzy matching packages
-	rfuzzy "github.com/renstrom/fuzzysearch/fuzzy"
 	sfuzzy "github.com/sahilm/fuzzy"
 )
 
@@ -48,17 +46,7 @@ func defaultStorePath() (string, error) {
 }
 
 // Set the configuration options for password matching.
-func (s *diskStore) SetConfig(path *string, use_fuzzy *bool, fuzzy_algorithm *string) error {
-	// do this first to detect error condition before changing other options
-	if fuzzy_algorithm != nil {
-		switch *fuzzy_algorithm {
-		case "sahilm", "renstrom":
-			s.fuzzyAlgorithm = *fuzzy_algorithm
-		default:
-			return errors.New("Bad fuzzy algorithm: " + *fuzzy_algorithm)
-		}
-	}
-
+func (s *diskStore) SetConfig(path *string, use_fuzzy *bool) error {
 	if path != nil {
 		//todo validate path exists
 		s.path = *path
@@ -75,48 +63,14 @@ func (s *diskStore) Search(query string) ([]string, error) {
 	// default legacy glob search
 	if !s.useFuzzy {
 		return s.GlobSearch(query)
-	}
-	// Algorithm chooser
-	switch s.fuzzyAlgorithm {
-	case "renstrom":
-		return s.renstromFuzzySearch(query)
-	case "sahilm":
+	} else {
 		return s.sahilmFuzzySerach(query)
 	}
-	return nil, errors.New("Bad settings combo - can't happen?")
 }
 
 // Fuzzy searches first get a list of all pass entries by doing a glob search
-// for the empty string, then apply appropriate logic relevant to the
-// specific algorithm, finally returning all of the unique entries.
-
-// Search based on the renstrom fuzzy package.
-func (s *diskStore) renstromFuzzySearch(query string) ([]string, error) {
-	var items []string
-	file_list, err := s.GlobSearch("")
-	if err != nil {
-		return nil, err
-	}
-
-	// use RankFind because raw matches have no sorting criteria.
-	// The RankFind is based on levenstein distance only, and returns
-	// and unsorted list, so we first sort the matches then create
-	// a slice of strings to return.
-	matches := rfuzzy.RankFind(query, file_list)
-	sort.Sort(matches)
-	// convert maches into a slice of strings - match.Target is the
-	// original string passed into the algorithm
-	for _, match := range matches {
-		items = append(items, match.Target)
-	}
-
-	result := unique(items)
-
-	return result, nil
-}
-
-// Use the sahilm Fuzzy search. This algoritm returns result sorted
-// by best match defined in the algroithm.
+// for the empty string, then apply appropriate logic to convert results to
+// a slice of strings, finally returning all of the unique entries.
 func (s *diskStore) sahilmFuzzySerach(query string) ([]string, error) {
 	var items []string
 	file_list, err := s.GlobSearch("")
