@@ -8,12 +8,6 @@ function save_options() {
   var use_fuzzy = document.getElementById("use-fuzzy").checked;
   localStorage.setItem("use_fuzzy", use_fuzzy);
 
-  // fuzzy_algorithm - since there are two libraries being evaluated
-  // provide a way to select between them withoug needing rebuild
-  // of the browserpass native client.
-  var fuzzy_algorithm = document.querySelector('input[name="fuzzyalgo"]:checked').value;
-  localStorage.setItem("fuzzy_algorithm", fuzzy_algorithm);
-
   window.close();
 }
 
@@ -24,17 +18,6 @@ function restore_options() {
   // Restore the view to show the settings described above
   var use_fuzzy = localStorage.getItem("use_fuzzy") == "true";
   document.getElementById("use-fuzzy").checked = use_fuzzy;
-
-  var fuzzy_algorithm = localStorage.getItem("fuzzy_algorithm");
-  if (fuzzy_algorithm != null) {
-    document.getElementsByName("fuzzyalgo").forEach(function(elem) {
-      if (elem.value == fuzzy_algorithm) {
-        elem.checked = true;
-      } else {
-        elem.checked = false;
-      }
-    });
-  }
 }
 
 document.addEventListener("DOMContentLoaded", restore_options);
