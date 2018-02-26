@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"fmt"
+
 	"os/user"
 
 	"github.com/mattn/go-zglob"
@@ -62,8 +64,10 @@ func (s *diskStore) SetConfig(path *string, use_fuzzy *bool) error {
 func (s *diskStore) Search(query string) ([]string, error) {
 	// default legacy glob search
 	if !s.useFuzzy {
+		fmt.Fprintf(os.Stderr, "Doing globsearch\n")
 		return s.GlobSearch(query)
 	} else {
+		fmt.Fprintf(os.Stderr, "Doing fuzzy\n")
 		return s.sahilmFuzzySerach(query)
 	}
 }

@@ -12,6 +12,9 @@ import (
 	"regexp"
 	"strings"
 
+	"fmt"
+	"os"
+
 	"github.com/dannyvankooten/browserpass/pass"
 	"github.com/dannyvankooten/browserpass/protector"
 	"github.com/gokyle/twofactor"
@@ -70,6 +73,15 @@ func Run(stdin io.Reader, stdout io.Writer, s pass.Store) error {
 		var resp interface{}
 		switch data.Action {
 		case "search":
+			list, err := s.Search(data.Domain)
+			if err != nil {
+				return err
+			}
+			resp = list
+		case "match_domain":
+			fmt.Fprintf(os.Stderr, "Got match domain, data is: %s\n", data.Domain)
+			data.Settings.UseFuzzy = false
+			s.SetConfig(nil, &data.Settings.UseFuzzy)
 			list, err := s.Search(data.Domain)
 			if err != nil {
 				return err

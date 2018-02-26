@@ -105,10 +105,10 @@ function init(tab) {
 
   activeTab = tab;
   var activeDomain = parseDomainFromUrl(tab.url);
-  searchPassword(activeDomain);
+  searchPassword(activeDomain, "match_domain");
 }
 
-function searchPassword(_domain) {
+function searchPassword(_domain, action="search") {
   searching = true;
   logins = null;
   domain = _domain;
@@ -124,7 +124,7 @@ function searchPassword(_domain) {
     function(response) {
       chrome.runtime.sendNativeMessage(
         app,
-        { action: "search", domain: _domain, settings: response},
+        { action: action, domain: _domain, settings: response},
         function(response) {
           if (chrome.runtime.lastError) {
             error = chrome.runtime.lastError.message;
