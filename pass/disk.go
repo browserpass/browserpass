@@ -59,14 +59,14 @@ func (s *diskStore) Search(query string) ([]string, error) {
 	if !s.useFuzzy {
 		return s.GlobSearch(query)
 	} else {
-		return s.FuzzySerach(query)
+		return s.FuzzySearch(query)
 	}
 }
 
 // Fuzzy searches first get a list of all pass entries by doing a glob search
 // for the empty string, then apply appropriate logic to convert results to
 // a slice of strings, finally returning all of the unique entries.
-func (s *diskStore) FuzzySerach(query string) ([]string, error) {
+func (s *diskStore) FuzzySearch(query string) ([]string, error) {
 	var items []string
 	file_list, err := s.GlobSearch("")
 	if err != nil {
