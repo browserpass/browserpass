@@ -24,7 +24,7 @@ func TestDefaultStorePath(t *testing.T) {
 	expected = filepath.Join(home, ".password-store")
 	actual, _ = defaultStorePath()
 	if expected != actual {
-		t.Errorf("%s does not match %s", expected, actual)
+		t.Errorf("1: '%s' does not match '%s'", expected, actual)
 	}
 
 	// custom directory from $PASSWORD_STORE_DIR
@@ -36,9 +36,12 @@ func TestDefaultStorePath(t *testing.T) {
 	fmt.Println(expected)
 	os.Mkdir(expected, os.ModePerm)
 	os.Setenv("PASSWORD_STORE_DIR", expected)
-	actual, _ = defaultStorePath()
+	actual, err = defaultStorePath()
+	if err != nil {
+		t.Error(err)
+	}
 	if expected != actual {
-		t.Errorf("%s does not match %s", expected, actual)
+		t.Errorf("2: '%s' does not match '%s'", expected, actual)
 	}
 
 	// clean-up
@@ -63,7 +66,7 @@ func TestDiskStore_Search_nomatch(t *testing.T) {
 }
 
 func TestDiskStoreSearch(t *testing.T) {
-	store := diskStore{"test_store"}
+	store := diskStore{"test_store", false}
 	targetDomain := "abc.com"
 	testDomains := []string{"abc.com", "test.abc.com", "testing.test.abc.com"}
 	for _, domain := range testDomains {
@@ -86,7 +89,7 @@ func TestDiskStoreSearch(t *testing.T) {
 }
 
 func TestDiskStoreSearchNoDuplicatesWhenPatternMatchesDomainAndUsername(t *testing.T) {
-	store := diskStore{"test_store"}
+	store := diskStore{"test_store", false}
 	searchResult, err := store.Search("xyz")
 	if err != nil {
 		t.Fatal(err)
@@ -101,7 +104,7 @@ func TestDiskStoreSearchNoDuplicatesWhenPatternMatchesDomainAndUsername(t *testi
 }
 
 func TestDiskStoreSearchFollowsSymlinkFiles(t *testing.T) {
-	store := diskStore{"test_store"}
+	store := diskStore{"test_store", false}
 	searchResult, err := store.Search("def.com")
 	if err != nil {
 		t.Fatal(err)
@@ -116,7 +119,7 @@ func TestDiskStoreSearchFollowsSymlinkFiles(t *testing.T) {
 }
 
 func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
-	store := diskStore{"test_store"}
+	store := diskStore{"test_store", false}
 	searchResult, err := store.Search("amazon.co.uk")
 	if err != nil {
 		t.Fatal(err)
@@ -131,7 +134,7 @@ func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
 }
 
 func TestDiskStoreSearchSubDirectories(t *testing.T) {
-	store := diskStore{"test_store"}
+	store := diskStore{"test_store", false}
 	searchTermsMatches := map[string][]string{
 		"abc.org": []string{"abc.org/user3", "abc.org/wiki/user4", "abc.org/wiki/work/user5"},
 		"wiki":    []string{"abc.org/wiki/user4", "abc.org/wiki/work/user5"},
@@ -155,7 +158,7 @@ func TestDiskStoreSearchSubDirectories(t *testing.T) {
 }
 
 func TestDiskStorePartSearch(t *testing.T) {
-	store := diskStore{"test_store"}
+	store := diskStore{"test_store", false}
 	searchResult, err := store.Search("ab")
 	if err != nil {
 		t.Fatal(err)
@@ -167,6 +170,63 @@ func TestDiskStorePartSearch(t *testing.T) {
 	for i := 0; i < len(expectedResult); i++ {
 		if searchResult[i] != expectedResult[i] {
 			t.Fatalf("Couldn't find %v, found %v instead", expectedResult, searchResult)
+		}
+	}
+}
+
+func TestFuzzySearch(t *testing.T) {
+	store := diskStore{"test_store", true}
+	searchResult, err := store.Search("amaz2")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResult) != 2 {
+		t.Fatalf("Result size was: %s expected 2", len(searchResult))
+	}
+
+	expectedResult := map[string]bool{
+		"amazon.co.uk/user2": true,
+		"amazon.com/user2":   true,
+	}
+
+	for _, res := range searchResult {
+		if !expectedResult[res] {
+			t.Fatalf("Result %s not expected!", res)
+		}
+	}
+}
+
+func TestFuzzySearchNoResult(t *testing.T) {
+	store := diskStore{"test_store", true}
+	searchResult, err := store.Search("vvv")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResult) != 0 {
+		t.Fatalf("Result size was: %s expected 0", len(searchResult))
+	}
+}
+
+func TestFuzzySearchTopLevelEntries(t *testing.T) {
+	store := diskStore{"test_store", true}
+	searchResult, err := store.Search("def")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResult) != 1 {
+		t.Fatalf("Result size was: %s expected 1", len(searchResult))
+	}
+
+	expectedResult := map[string]bool{
+		"def.com": true,
+	}
+
+	for _, res := range searchResult {
+		if !expectedResult[res] {
+			t.Fatalf("Result %s not expected!", res)
 		}
 	}
 }
