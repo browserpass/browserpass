@@ -67,20 +67,25 @@ function view() {
           onkeydown: searchKeyHandler
         },
         [
-          m("input", {
-            type: "text",
-            id: "search-field",
-            name: "s",
-            placeholder: "Search password..",
-            autocomplete: "off",
-            autofocus: "on",
-            oninput: filterLogins
+          m("div", {
+            "id": "filter-search"
           }),
-          m("input", {
-            type: "submit",
-            value: "Search",
-            style: "display: none;"
-          })
+          m("div", [
+            m("input", {
+              type: "text",
+              id: "search-field",
+              name: "s",
+              placeholder: "Search password..",
+              autocomplete: "off",
+              autofocus: "on",
+              oninput: filterLogins
+            }),
+            m("input", {
+              type: "submit",
+              value: "Search",
+              style: "display: none;"
+            })
+          ])
         ]
       )
     ]),
@@ -116,7 +121,11 @@ function filterLogins(e) {
     fillOnSubmit = logins.length > 0;
   }
 
+  // redraw the list
   m.redraw();
+
+  // show / hide the filter hint
+  showFilterHint(filter.length > 0 && logins.length);
 }
 
 function searchKeyHandler(e) {
@@ -125,6 +134,16 @@ function searchKeyHandler(e) {
     e.preventDefault();
     logins = resultLogins = null;
     e.target.value = '';
+    showFilterHint(false);
+  }
+}
+
+function showFilterHint(show=true) {
+  var filterHint = document.getElementById("filter-search");
+  if (show) {
+    filterHint.style.display = "block";
+  } else {
+    filterHint.style.display = "none";
   }
 }
 
@@ -182,7 +201,9 @@ function searchPassword(_domain, action="search", useFillOnSubmit=true) {
 
           searching = false;
           logins = resultLogins = response;
+          document.getElementById("filter-search").textContent = domain;
           fillOnSubmit = useFillOnSubmit && logins && logins.length > 0;
+          showFilterHint(fillOnSubmit);
           m.redraw();
         }
       );

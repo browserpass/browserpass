@@ -7,17 +7,35 @@ body {
   font-size: 14px;
 }
 
+.search > form {
+  border-bottom: 1px solid #bbb;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.search > form :last-child {
+  width: 100%;
+}
+
 .search input {
   box-sizing: border-box;
   width: 100%;
   padding: 6px;
   border: 0;
-  border-bottom: 1px solid #bbb;
   background: url("icon-search.svg") center right 6px no-repeat;
   background-size: 16px 16px;
   background-color: white;
   color: black;
   padding-right: 20px;
+}
+
+#filter-search {
+  background: #eee;
+  border: 0;
+  box-sizing: border-box;
+  display: none;
+  padding: 6px;
+  padding-top: 5px;
 }
 
 .search input:focus {
