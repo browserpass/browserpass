@@ -97,11 +97,6 @@ function view() {
 }
 
 function filterLogins(e) {
-  // remove executed search from input field
-  if (!fillOnSubmit && e.target.value.indexOf(domain) === 0) {
-    e.target.value = e.target.value.substr(domain.length);
-  }
-
   // use fuzzy search to filter results
   var filter = e.target.value.trim().split(/[\s\/]+/);
   if (filter.length > 0) {
@@ -132,10 +127,10 @@ function filterLogins(e) {
 
 function searchKeyHandler(e) {
   // switch to search mode if '\' is pressed and no filter text has been entered
-  if (e.code == "Backspace" && logins && logins.length > 0 && (!e.target.value.length || e.target.value == domain)) {
+  if (e.code == "Backspace" && logins && logins.length > 0 && e.target.value.length == 0) {
     e.preventDefault();
     logins = resultLogins = [];
-    e.target.value = '';
+    e.target.value = fillOnSubmit ? '' : domain;
     showFilterHint(false);
   }
 }
@@ -207,7 +202,10 @@ function searchPassword(_domain, action="search", useFillOnSubmit=true) {
           logins = resultLogins = response ? response : [];
           document.getElementById("filter-search").textContent = domain;
           fillOnSubmit = useFillOnSubmit && logins && logins.length > 0;
-          showFilterHint(fillOnSubmit);
+          if (logins && logins.length > 0) {
+            showFilterHint(true);
+            document.getElementById("search-field").value = '';
+          }
           m.redraw();
         }
       );
