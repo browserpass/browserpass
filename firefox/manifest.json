@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "browserpass-ce",
   "description": "Firefox extension for zx2c4's pass (password manager) - Community Edition.",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "author": "Danny van Kooten",
   "homepage_url": "https://github.com/dannyvankooten/browserpass",
   "options_ui": {
@@ -24,6 +24,7 @@
     "tabs",
     "activeTab",
     "nativeMessaging",
+    "notifications",
     "storage",
     "http://*/*",
     "https://*/*"

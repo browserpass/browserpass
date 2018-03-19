@@ -6,6 +6,7 @@ var tabInfos = {};
 
 chrome.runtime.onMessage.addListener(onMessage);
 chrome.tabs.onUpdated.addListener(onTabUpdated);
+chrome.runtime.onInstalled.addListener(onExtensionInstalled);
 
 // fill login form & submit
 function fillLoginForm(login, tab) {
@@ -90,8 +91,9 @@ function onMessage(request, sender, sendResponse) {
   // object that has current settings. Update this as new settings
   // are added (or old ones removed)
   if (request.action == "getSettings") {
-    const use_fuzzy_search = localStorage.getItem("use_fuzzy_search") != "false";
-    sendResponse({ use_fuzzy_search: use_fuzzy_search})
+    const use_fuzzy_search =
+      localStorage.getItem("use_fuzzy_search") != "false";
+    sendResponse({ use_fuzzy_search: use_fuzzy_search });
   }
 }
 
@@ -112,4 +114,31 @@ function getHostname(url) {
   var a = document.createElement("a");
   a.href = url;
   return a.hostname;
+}
+
+function onExtensionInstalled(details) {
+  // No permissions
+  if (!chrome.notifications) {
+    return;
+  }
+
+  if (details.reason != "update") {
+    return;
+  }
+
+  var changelog = {
+    "2.0.13": "Breaking change: please update the host app to at least v2.0.12"
+  };
+
+  var version = chrome.runtime.getManifest().version;
+  if (!(version in changelog)) {
+    return;
+  }
+
+  chrome.notifications.create(version, {
+    title: "browserpass: Important changes",
+    message: changelog[version],
+    iconUrl: "icon-lock.png",
+    type: "basic"
+  });
 }
