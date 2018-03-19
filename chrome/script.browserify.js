@@ -64,7 +64,7 @@ function view() {
         "form",
         {
           onsubmit: submitSearchForm,
-          onkeypress: searchKeyHandler
+          onkeydown: searchKeyHandler
         },
         [
           m("input", {
@@ -121,7 +121,7 @@ function filterLogins(e) {
 
 function searchKeyHandler(e) {
   // switch to search mode if '\' is pressed and no filter text has been entered
-  if (e.key == "\\" && (!e.target.value.length || e.target.value == domain)) {
+  if (e.code == "Backspace" && (!e.target.value.length || e.target.value == domain)) {
     e.preventDefault();
     logins = resultLogins = null;
     e.target.value = '';
