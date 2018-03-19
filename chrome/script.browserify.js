@@ -27,7 +27,7 @@ function view() {
     results = m("div.status-text", "Error: " + error);
     error = undefined;
   } else if (logins) {
-    if (logins.length === 0) {
+    if (logins.length === 0 && domain && domain.length > 0) {
       results = m(
         "div.status-text",
         m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
@@ -131,6 +131,7 @@ function searchKeyHandler(e) {
     e.preventDefault();
     logins = resultLogins = [];
     e.target.value = fillOnSubmit ? '' : domain;
+    domain = '';
     showFilterHint(false);
   }
 }
