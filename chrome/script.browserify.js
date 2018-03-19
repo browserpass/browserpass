@@ -126,8 +126,8 @@ function filterLogins(e) {
 }
 
 function searchKeyHandler(e) {
-  // switch to search mode if '\' is pressed and no filter text has been entered
-  if (e.code == "Backspace" && logins && logins.length > 0 && e.target.value.length == 0) {
+  // switch to search mode if backspace is pressed and no filter text has been entered
+  if (e.code == "Backspace" && logins.length > 0 && e.target.value.length == 0) {
     e.preventDefault();
     logins = resultLogins = [];
     e.target.value = fillOnSubmit ? '' : domain;
@@ -150,7 +150,7 @@ function showFilterHint(show=true) {
 function submitSearchForm(e) {
   e.preventDefault();
 
-  if (fillOnSubmit && logins && logins.length > 0) {
+  if (fillOnSubmit && logins.length > 0) {
     // fill using the first result
     getLoginData.bind(logins[0])();
   } else {
@@ -201,7 +201,7 @@ function searchPassword(_domain, action="search", useFillOnSubmit=true) {
           searching = false;
           logins = resultLogins = response ? response : [];
           document.getElementById("filter-search").textContent = domain;
-          fillOnSubmit = useFillOnSubmit && logins && logins.length > 0;
+          fillOnSubmit = useFillOnSubmit && logins.length > 0;
           if (logins && logins.length > 0) {
             showFilterHint(true);
             document.getElementById("search-field").value = '';
