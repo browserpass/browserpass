@@ -5,6 +5,8 @@ var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
 var logins;
+var resultLogins;
+var fillOnSubmit = false;
 var error;
 var domain, urlDuringSearch;
 
@@ -61,7 +63,8 @@ function view() {
       m(
         "form",
         {
-          onsubmit: submitSearchForm
+          onsubmit: submitSearchForm,
+          onkeypress: searchKeyHandler
         },
         [
           m("input", {
@@ -70,7 +73,8 @@ function view() {
             name: "s",
             placeholder: "Search password..",
             autocomplete: "off",
-            autofocus: "on"
+            autofocus: "on",
+            oninput: filterLogins
           }),
           m("input", {
             type: "submit",
@@ -86,15 +90,59 @@ function view() {
   ]);
 }
 
+function filterLogins(e) {
+  // remove executed search from input field
+  if (!fillOnSubmit && e.target.value.indexOf(domain) === 0) {
+    e.target.value = e.target.value.substr(domain.length);
+  }
+
+  // get filter array and reset available logins
+  var filter = e.target.value.split(/[\s\/]+/);
+  logins = resultLogins.slice(0);
+
+  if (filter.length > 0) {
+    // filter logins by each filter element
+    logins:
+    for (var i = logins.length - 1; i >= 0; i--) {
+      for (var j in filter) {
+        if (!~logins[i].indexOf(filter[j])) {
+          logins.splice(i, 1);
+          continue logins;
+        }
+      }
+    }
+
+    // fill login forms on submit rather than initiating a search
+    fillOnSubmit = logins.length > 0;
+  }
+
+  m.redraw();
+}
+
+function searchKeyHandler(e) {
+  // switch to search mode if '\' is pressed and no filter text has been entered
+  if (e.key == "\\" && (!e.target.value.length || e.target.value == domain)) {
+    e.preventDefault();
+    logins = resultLogins = null;
+    e.target.value = '';
+  }
+}
+
 function submitSearchForm(e) {
   e.preventDefault();
 
-  // don't search without input.
-  if (!this.s.value.length) {
-    return;
-  }
+  if (fillOnSubmit && logins && logins.length > 0) {
+    // fill using the first result
+    getLoginData.bind(logins[0])();
+  } else {
+    // don't search without input.
+    if (!this.s.value.length) {
+      return;
+    }
 
-  searchPassword(this.s.value);
+    // search for matching entries
+    searchPassword(this.s.value, "search", false);
+  }
 }
 
 function init(tab) {
@@ -108,8 +156,9 @@ function init(tab) {
   searchPassword(activeDomain, "match_domain");
 }
 
-function searchPassword(_domain, action="search") {
+function searchPassword(_domain, action="search", useFillOnSubmit=true) {
   searching = true;
+  resultLogins = null;
   logins = null;
   domain = _domain;
   urlDuringSearch = activeTab.url;
@@ -132,7 +181,8 @@ function searchPassword(_domain, action="search") {
           }
 
           searching = false;
-          logins = response;
+          logins = resultLogins = response;
+          fillOnSubmit = useFillOnSubmit && logins && logins.length > 0;
           m.redraw();
         }
       );
@@ -160,6 +210,7 @@ function getFaviconUrl(domain) {
 
 function getLoginData() {
   searching = true;
+  resultLogins = null;
   logins = null;
   m.redraw();
 
@@ -167,6 +218,7 @@ function getLoginData() {
     { action: "login", entry: this, urlDuringSearch: urlDuringSearch },
     function(response) {
       searching = false;
+      fillOnSubmit = false;
 
       if (response.error) {
         error = response.error;
