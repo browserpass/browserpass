@@ -203,7 +203,7 @@ function searchPassword(_domain, action="search", useFillOnSubmit=true) {
           logins = resultLogins = response ? response : [];
           document.getElementById("filter-search").textContent = domain;
           fillOnSubmit = useFillOnSubmit && logins.length > 0;
-          if (logins && logins.length > 0) {
+          if (logins.length > 0) {
             showFilterHint(true);
             document.getElementById("search-field").value = '';
           }
