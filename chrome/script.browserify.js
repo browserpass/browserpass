@@ -295,14 +295,16 @@ function keyHandler(e) {
       switchFocus("div.entry:first-child > .login", "nextElementSibling");
       break;
     case "c":
-      if (e.ctrlKey) {
+      if (e.target.id != "search-field" && e.ctrlKey) {
         document.activeElement["nextElementSibling"][
           "nextElementSibling"
         ].click();
       }
       break;
     case "C":
-      document.activeElement["nextElementSibling"].click();
+      if (e.target.id != "search-field") {
+        document.activeElement["nextElementSibling"].click();
+      }
       break;
   }
 }
