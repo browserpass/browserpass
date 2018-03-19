@@ -103,11 +103,17 @@ function filterLogins(e) {
   }
 
   // use fuzzy search to filter results
-  var filter = e.target.value.trim();
+  var filter = e.target.value.trim().split(/[\s\/]+/);
   if (filter.length > 0) {
-    logins = [];
-    FuzzySort.go(filter, resultLogins, {allowTypo: false}).forEach(function(result) {
-      logins.push(result.target);
+    logins = resultLogins.slice(0);
+    filter.forEach(function(word) {
+      if (word.length > 0) {
+        var refine = [];
+        FuzzySort.go(word, logins, {allowTypo: false}).forEach(function(result) {
+          refine.push(result.target);
+        });
+        logins = refine.slice(0);
+      }
     });
 
     // fill login forms on submit rather than initiating a search
