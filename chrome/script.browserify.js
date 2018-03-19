@@ -5,8 +5,8 @@ var FuzzySort = require("fuzzysort");
 var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
-var logins;
-var resultLogins;
+var resultLogins = [];
+var logins = [];
 var fillOnSubmit = false;
 var error;
 var domain, urlDuringSearch;
@@ -30,7 +30,7 @@ function view() {
     if (logins.length === 0) {
       results = m(
         "div.status-text",
-        m.trust(`No passwords found for <strong>${domain}</strong>.`)
+        m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
       results = logins.map(function(login) {
@@ -134,7 +134,7 @@ function searchKeyHandler(e) {
   // switch to search mode if '\' is pressed and no filter text has been entered
   if (e.code == "Backspace" && logins && logins.length > 0 && (!e.target.value.length || e.target.value == domain)) {
     e.preventDefault();
-    logins = resultLogins = null;
+    logins = resultLogins = [];
     e.target.value = '';
     showFilterHint(false);
   }
@@ -182,8 +182,7 @@ function init(tab) {
 
 function searchPassword(_domain, action="search", useFillOnSubmit=true) {
   searching = true;
-  resultLogins = null;
-  logins = null;
+  logins = resultLogins = [];
   domain = _domain;
   urlDuringSearch = activeTab.url;
   m.redraw();
@@ -205,7 +204,7 @@ function searchPassword(_domain, action="search", useFillOnSubmit=true) {
           }
 
           searching = false;
-          logins = resultLogins = response;
+          logins = resultLogins = response ? response : [];
           document.getElementById("filter-search").textContent = domain;
           fillOnSubmit = useFillOnSubmit && logins && logins.length > 0;
           showFilterHint(fillOnSubmit);
@@ -236,8 +235,7 @@ function getFaviconUrl(domain) {
 
 function getLoginData() {
   searching = true;
-  resultLogins = null;
-  logins = null;
+  logins = resultLogins = [];
   m.redraw();
 
   chrome.runtime.sendMessage(
