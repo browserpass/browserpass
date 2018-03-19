@@ -124,6 +124,8 @@ function filterLogins(e) {
 
     // fill login forms on submit rather than initiating a search
     fillOnSubmit = logins.length > 0;
+  } else {
+    logins = resultLogins.slice(0);
   }
 
   // redraw the list
