@@ -1,6 +1,7 @@
 "use strict";
 
 var m = require("mithril");
+var Fuse = require("fuse.js");
 var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
@@ -101,21 +102,25 @@ function filterLogins(e) {
     e.target.value = e.target.value.substr(domain.length);
   }
 
-  // get filter array and reset available logins
-  var filter = e.target.value.split(/[\s\/]+/);
-  logins = resultLogins.slice(0);
-
+  // use fuse.js fuzzy search to filter results
+  var filter = e.target.value.trim();
   if (filter.length > 0) {
-    // filter logins by each filter element
-    logins:
-    for (var i = logins.length - 1; i >= 0; i--) {
-      for (var j in filter) {
-        if (!~logins[i].indexOf(filter[j])) {
-          logins.splice(i, 1);
-          continue logins;
-        }
-      }
-    }
+    logins = [];
+    var fuseOptions = {
+      shouldSort: true,
+      tokenize: true,
+      matchAllTokens: true,
+      threshold: 0.4,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: undefined
+    };
+    var fuse = new Fuse(resultLogins, fuseOptions);
+    fuse.search(filter).forEach(function(i) {
+      logins.push(resultLogins[i]);
+    });
 
     // fill login forms on submit rather than initiating a search
     fillOnSubmit = logins.length > 0;
@@ -125,7 +130,7 @@ function filterLogins(e) {
   m.redraw();
 
   // show / hide the filter hint
-  showFilterHint(filter.length > 0 && logins.length);
+  showFilterHint(e.target.value.length > 0 && logins.length);
 }
 
 function searchKeyHandler(e) {
