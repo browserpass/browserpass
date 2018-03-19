@@ -1,7 +1,7 @@
 "use strict";
 
 var m = require("mithril");
-var Fuse = require("fuse.js");
+var FuzzySort = require("fuzzysort");
 var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
@@ -102,24 +102,12 @@ function filterLogins(e) {
     e.target.value = e.target.value.substr(domain.length);
   }
 
-  // use fuse.js fuzzy search to filter results
+  // use fuzzy search to filter results
   var filter = e.target.value.trim();
   if (filter.length > 0) {
     logins = [];
-    var fuseOptions = {
-      shouldSort: true,
-      tokenize: true,
-      matchAllTokens: true,
-      threshold: 0.4,
-      location: 0,
-      distance: 100,
-      maxPatternLength: 32,
-      minMatchCharLength: 1,
-      keys: undefined
-    };
-    var fuse = new Fuse(resultLogins, fuseOptions);
-    fuse.search(filter).forEach(function(i) {
-      logins.push(resultLogins[i]);
+    FuzzySort.go(filter, resultLogins, {allowTypo: false}).forEach(function(result) {
+      logins.push(result.target);
     });
 
     // fill login forms on submit rather than initiating a search
