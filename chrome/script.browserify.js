@@ -119,6 +119,7 @@ function filterLogins(e) {
     // fill login forms on submit rather than initiating a search
     fillOnSubmit = logins.length > 0;
   } else {
+    // reset the result list if the filter is empty
     logins = resultLogins.slice(0);
   }
 
