@@ -122,7 +122,7 @@ function filterLogins(e) {
   m.redraw();
 
   // show / hide the filter hint
-  showFilterHint(logins && logins.length);
+  showFilterHint(logins.length);
 }
 
 function searchKeyHandler(e) {
