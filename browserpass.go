@@ -179,9 +179,16 @@ func readLoginGPG(r io.Reader) (*Login, error) {
 }
 
 func parseTotp(str string, l *Login) error {
-	re := regexp.MustCompile("^otpauth.*$")
-	ourl := re.FindString(str)
+	urlPattern := regexp.MustCompile("^otpauth.*$")
+	ourl := urlPattern.FindString(str)
 
+	if ourl == "" {
+		tokenPattern := regexp.MustCompile("(?i)^totp(-secret)?:")
+		token := tokenPattern.ReplaceAllString(str, "");
+		if len(token) != len(str) {
+			ourl = "otpauth://totp/?secret=" + strings.TrimSpace(token)
+		}
+	}
 	if ourl != "" {
 		o, label, err := twofactor.FromURL(ourl)
 		if err != nil {
@@ -213,6 +220,11 @@ func parseLogin(r io.Reader) (*Login, error) {
 		if len(replaced) != len(line) {
 			login.Username = strings.TrimSpace(replaced)
 		}
+	}
+
+	// if an unlabelled OTP is present, label it with the username
+	if strings.TrimSpace(login.OTPLabel) == "" && login.OTP != "" {
+		login.OTPLabel = login.Username
 	}
 
 	return login, nil
