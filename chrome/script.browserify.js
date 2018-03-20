@@ -45,6 +45,10 @@ function view() {
 
         return m("div.entry", [
           m(selector, options, login),
+          m("button.launch.url", {
+            onclick: launchURL.bind({ entry: login, what: "url" }),
+            tabindex: -1
+          }),
           m("button.copy.username", {
             onclick: loginToClipboard.bind({ entry: login, what: "username" }),
             tabindex: -1
@@ -76,7 +80,7 @@ function view() {
               type: "text",
               id: "search-field",
               name: "s",
-              placeholder: "Search passwords..",
+              placeholder: "Search passwords...",
               autocomplete: "off",
               autofocus: "on",
               oninput: filterLogins
@@ -232,6 +236,32 @@ function getFaviconUrl(domain) {
   return null;
 }
 
+function launchURL() {
+  var what = this.what;
+  chrome.runtime.sendNativeMessage(
+    app,
+    { action: "get", entry: this.entry },
+    function(response) {
+      if (chrome.runtime.lastError) {
+        error = chrome.runtime.lastError.message;
+        m.redraw();
+      } else {
+        if (response.hasOwnProperty("url") && response.url.length > 0) {
+          var url = response.url.match(/^([a-z]+:)?\/\//i) ? response.url : "http://" + response.url;
+          chrome.tabs.create({url: url});
+          window.close();
+        } else {
+          if (!response.hasOwnProperty("url")) {
+            resetWithError("Your host application is too old - must be at least 2.0.14 for URL launch.");
+          } else {
+            resetWithError("No URL is available for this login.");
+          }
+        }
+      }
+    }
+  );
+}
+
 function getLoginData() {
   searching = true;
   logins = resultLogins = [];
@@ -298,16 +328,18 @@ function keyHandler(e) {
       break;
     case "c":
       if (e.target.id != "search-field" && e.ctrlKey) {
-        document.activeElement["nextElementSibling"][
-          "nextElementSibling"
-        ].click();
+        document.activeElement.parentNode.querySelector("button.copy.password").click();
       }
       break;
     case "C":
       if (e.target.id != "search-field") {
-        document.activeElement["nextElementSibling"].click();
+        document.activeElement.parentNode.querySelector("button.copy.username").click();
       }
       break;
+    case "g":
+      if (e.target.id != "search-field") {
+        document.activeElement.parentNode.querySelector("button.launch.url").click();
+      }
   }
 }
 
@@ -335,4 +367,19 @@ function oncreate() {
   window.setTimeout(function() {
     document.getElementById("search-field").focus();
   }, 100);
+}
+
+function resetWithError(errMsg) {
+  domain = '';
+  logins = resultLogins = [];
+  fillOnSubmit = false;
+  searching = false;
+  var filterSearch = document.getElementById("filter-search");
+  filterSearch.style.display = "none";
+  filterSearch.textContent = '';
+  var searchField = document.getElementById("search-field");
+  searchField.setAttribute("placeholder", "Search passwords...");
+  error = errMsg;
+  m.redraw();
+  searchField.focus();
 }

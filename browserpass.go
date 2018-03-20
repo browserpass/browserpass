@@ -23,6 +23,7 @@ type Login struct {
 	Password string `json:"p"`
 	OTP      string `json:"digits"`
 	OTPLabel string `json:"label"`
+	URL      string `json:"url"`
 }
 
 var endianness = binary.LittleEndian
@@ -212,13 +213,18 @@ func parseLogin(r io.Reader) (*Login, error) {
 	login.Password = scanner.Text()
 
 	// Keep reading file for string in "login:", "username:" or "user:" format (case insensitive).
-	re := regexp.MustCompile("(?i)^(login|username|user):")
+	userPattern := regexp.MustCompile("(?i)^(login|username|user):")
+	urlPattern := regexp.MustCompile("(?i)^(url|link|website|web|site):")
 	for scanner.Scan() {
 		line := scanner.Text()
 		parseTotp(line, login)
-		replaced := re.ReplaceAllString(line, "")
+		replaced := userPattern.ReplaceAllString(line, "")
 		if len(replaced) != len(line) {
 			login.Username = strings.TrimSpace(replaced)
+		}
+		replaced = urlPattern.ReplaceAllString(line, "")
+		if len(replaced) != len(line) {
+			login.URL = strings.TrimSpace(replaced)
 		}
 	}
 

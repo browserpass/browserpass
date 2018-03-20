@@ -58,10 +58,15 @@ body {
   border-bottom: 1px dotted #ccc;
 }
 
-.copy {
+.copy, .launch {
   width: 32px;
   border: 0;
   cursor: pointer;
+}
+
+.url {
+    background: no-repeat url('icon-globe.svg') center;
+    background-size: 16px 16px;
 }
 
 .username {
