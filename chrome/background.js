@@ -101,17 +101,17 @@ function onMessage(request, sender, sendResponse) {
     chrome.tabs.create({url: request.url}, function (tab) {
       var authAttempted = false;
       chrome.webRequest.onAuthRequired.addListener(
-	function authListener(requestDetails) {
-	  // remove event listeners once tab loading is complete
-	  chrome.tabs.onUpdated.addListener(function statusListener(tabId, info) {
-	    if (info.status === "complete") {
-	      chrome.tabs.onUpdated.removeListener(statusListener);
-	      chrome.webRequest.onAuthRequired.removeListener(authListener);
-	    }
-	  });
-	  // only supply credentials if this is the first time for this tab
-	  if (!authAttempted) {
-	    authAttempted = true;
+        function authListener(requestDetails) {
+          // remove event listeners once tab loading is complete
+          chrome.tabs.onUpdated.addListener(function statusListener(tabId, info) {
+            if (info.status === "complete") {
+              chrome.tabs.onUpdated.removeListener(statusListener);
+              chrome.webRequest.onAuthRequired.removeListener(authListener);
+            }
+          });
+          // only supply credentials if this is the first time for this tab
+          if (!authAttempted) {
+            authAttempted = true;
             // ask the user before sending credentials over an insecure connection
             if (!requestDetails.url.match(/^https:/i)) {
               var message =
@@ -123,11 +123,11 @@ function onMessage(request, sender, sendResponse) {
                 return {};
               }
             }
-	    return {authCredentials: {username: request.username, password: request.password}};
-	  }
-	},
-	{urls: ["*://*/*"], tabId: tab.id},
-	["blocking"]
+            return {authCredentials: {username: request.username, password: request.password}};
+          }
+        },
+        {urls: ["*://*/*"], tabId: tab.id},
+        ["blocking"]
       );
     });
   }
