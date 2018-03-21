@@ -222,9 +222,11 @@ func parseLogin(r io.Reader) (*Login, error) {
 		if len(replaced) != len(line) {
 			login.Username = strings.TrimSpace(replaced)
 		}
-		replaced = urlPattern.ReplaceAllString(line, "")
-		if len(replaced) != len(line) {
-			login.URL = strings.TrimSpace(replaced)
+		if (login.URL == "") {
+			replaced = urlPattern.ReplaceAllString(line, "")
+			if len(replaced) != len(line) {
+				login.URL = strings.TrimSpace(replaced)
+			}
 		}
 	}
 
