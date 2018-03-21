@@ -103,28 +103,29 @@ function onMessage(request, sender, sendResponse) {
       chrome.webRequest.onAuthRequired.addListener(
         function authListener(requestDetails) {
           // only supply credentials if this is the first time for this tab
-          if (!authAttempted) {
-            // remove event listeners once tab loading is complete
-            chrome.tabs.onUpdated.addListener(function statusListener(tabId, info) {
-                if (info.status === "complete") {
-                chrome.tabs.onUpdated.removeListener(statusListener);
-                chrome.webRequest.onAuthRequired.removeListener(authListener);
-                }
-            });
-            authAttempted = true;
-            // ask the user before sending credentials over an insecure connection
-            if (!requestDetails.url.match(/^https:/i)) {
-              var message =
-                "You are about to submit login credentials via an insecure protocol!\n\n" +
-                "Are you sure you want to do this?\n\n" +
-                "URL: " + requestDetails.url
-                ;
-              if (!confirm(message)) {
-                return {};
-              }
-            }
-            return {authCredentials: {username: request.username, password: request.password}};
+          if (authAttempted) {
+            return {};
           }
+          // remove event listeners once tab loading is complete
+          chrome.tabs.onUpdated.addListener(function statusListener(tabId, info) {
+              if (info.status === "complete") {
+              chrome.tabs.onUpdated.removeListener(statusListener);
+              chrome.webRequest.onAuthRequired.removeListener(authListener);
+              }
+          });
+          authAttempted = true;
+          // ask the user before sending credentials over an insecure connection
+          if (!requestDetails.url.match(/^https:/i)) {
+            var message =
+              "You are about to submit login credentials via an insecure protocol!\n\n" +
+              "Are you sure you want to do this?\n\n" +
+              "URL: " + requestDetails.url
+              ;
+            if (!confirm(message)) {
+              return {};
+            }
+          }
+          return {authCredentials: {username: request.username, password: request.password}};
         },
         {urls: ["*://*/*"], tabId: tab.id},
         ["blocking"]
