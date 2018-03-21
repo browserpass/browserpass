@@ -4,7 +4,7 @@ PEM := $(shell find . -maxdepth 1 -name "*.pem")
 JS_OUTPUT := chrome/script.js chrome/inject.js chrome/inject_otp.js
 BROWSERIFY := ./node_modules/.bin/browserify
 
-all: deps js browserpass
+all: deps prettier js browserpass
 
 .PHONY: crx
 crx:
@@ -15,6 +15,11 @@ else
 	rm ./chrome.pem
 endif
 	mv chrome.crx chrome-browserpass.crx
+
+.PHONY: prettier
+prettier:
+	prettier --write "chrome/*.js"
+	prettier --write "chrome/*.css"
 
 .PHONY: js
 js: $(JS_OUTPUT)

@@ -9,6 +9,7 @@ OR
 
 - Run `make deps` to download all dependencies (you don't need to run this very often)
 - Run `make js` to compile only front-end code
+    - Run `make prettier` to additionally auto-format the code (this helps keeping code style consistent)
 - Run `make browserpass` to compile only back-end code
 
 The commands above will generate unpacked extensions for both Firefox and Chrome and compile the Go binaries for all supported platforms.

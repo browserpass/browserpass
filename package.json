@@ -1,8 +1,9 @@
 {
   "dependencies": {
     "browserify": "^14.4.0",
-    "mithril": "^1.1.4",
     "fuzzysort": "^1.1.0",
+    "mithril": "^1.1.4",
+    "prettier": "^1.11.1",
     "tldjs": "^2.3.1"
   }
 }
