@@ -2,6 +2,7 @@
 
 var m = require("mithril");
 var FuzzySort = require("fuzzysort");
+var Tldjs = require("tldjs");
 var app = "com.dannyvankooten.browserpass";
 var activeTab;
 var searching = false;
@@ -154,7 +155,6 @@ function showFilterHint(show=true) {
 
 function submitSearchForm(e) {
   e.preventDefault();
-
   if (fillOnSubmit && logins.length > 0) {
     // fill using the first result
     getLoginData.bind(logins[0])();
@@ -238,6 +238,7 @@ function getFaviconUrl(domain) {
 
 function launchURL() {
   var what = this.what;
+  var entry = this.entry;
   chrome.runtime.sendNativeMessage(
     app,
     { action: "get", entry: this.entry },
@@ -246,11 +247,25 @@ function launchURL() {
         error = chrome.runtime.lastError.message;
         m.redraw();
       } else {
+        // get url from login path
+        if (!response.hasOwnProperty("url") || response.url.length == 0) {
+          var parts = entry.split(/\//).reverse();
+          for (var i in parts) {
+            var part = parts[i];
+            var info = Tldjs.parse(part);
+            if (info.isValid && info.tldExists && info.domain !== null && info.hostname === part) {
+              response.url = part;
+              break;
+            }
+          }
+        }
+        // get url from password file
         if (response.hasOwnProperty("url") && response.url.length > 0) {
           var url = response.url.match(/^([a-z]+:)?\/\//i) ? response.url : "http://" + response.url;
           chrome.tabs.create({url: url});
           window.close();
         } else {
+          // no url available
           if (!response.hasOwnProperty("url")) {
             resetWithError("Your host application is too old - must be at least 2.0.14 for URL launch.");
           } else {
