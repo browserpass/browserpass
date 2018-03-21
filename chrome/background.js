@@ -117,8 +117,9 @@ function onMessage(request, sender, sendResponse) {
           // ask the user before sending credentials over an insecure connection
           if (!requestDetails.url.match(/^https:/i)) {
             var message =
-              "You are about to submit login credentials via an insecure protocol!\n\n" +
-              "Are you sure you want to do this?\n\n" +
+              "You are about to send login credentials via an insecure connection!\n\n" +
+              "Are you sure you want to do this? If there is an attacker watching your " +
+              "network traffic, they may be able to see your username and password.\n\n" +
               "URL: " + requestDetails.url
               ;
             if (!confirm(message)) {
