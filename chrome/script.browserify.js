@@ -246,32 +246,35 @@ function launchURL() {
       if (chrome.runtime.lastError) {
         error = chrome.runtime.lastError.message;
         m.redraw();
+          return;
+      }
+      // get url from login path if not available in the host app response
+      if (!response.hasOwnProperty("url") || response.url.length == 0) {
+        var parts = entry.split(/\//).reverse();
+        for (var i in parts) {
+          var part = parts[i];
+          var info = Tldjs.parse(part);
+          if (info.isValid && info.tldExists && info.domain !== null && info.hostname === part) {
+            response.url = part;
+            break;
+          }
+        }
+      }
+      // if a url is present, then launch a new tab via the background script
+      if (response.hasOwnProperty("url") && response.url.length > 0) {
+        var url = response.url.match(/^([a-z]+:)?\/\//i) ? response.url : "http://" + response.url;
+        chrome.runtime.sendMessage({action: "launch", url: url, username: response.u, password: response.p});
+        window.close();
+        return;
+      }
+      // no url available
+      if (!response.hasOwnProperty("url")) {
+        resetWithError(
+          "Unable to determine the URL for this entry. If you have defined one in the password file, " +
+          "your host application must be at least v2.0.14 for this to be usable."
+        );
       } else {
-        // get url from login path if not available in the host app response
-        if (!response.hasOwnProperty("url") || response.url.length == 0) {
-          var parts = entry.split(/\//).reverse();
-          for (var i in parts) {
-            var part = parts[i];
-            var info = Tldjs.parse(part);
-            if (info.isValid && info.tldExists && info.domain !== null && info.hostname === part) {
-              response.url = part;
-              break;
-            }
-          }
-        }
-        // if a url is present, then launch a new tab via the background script
-        if (response.hasOwnProperty("url") && response.url.length > 0) {
-          var url = response.url.match(/^([a-z]+:)?\/\//i) ? response.url : "http://" + response.url;
-          chrome.runtime.sendMessage({action: "launch", url: url, username: response.u, password: response.p});
-          window.close();
-        } else {
-          // no url available
-          if (!response.hasOwnProperty("url")) {
-            resetWithError("Your host application is too old - must be at least 2.0.14 for URL launch.");
-          } else {
-            resetWithError("No URL is available for this login.");
-          }
-        }
+        resetWithError("Unable to determine the URL for this entry.");
       }
     }
   );
