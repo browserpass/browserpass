@@ -247,7 +247,7 @@ function launchURL() {
         error = chrome.runtime.lastError.message;
         m.redraw();
       } else {
-        // get url from login path
+        // get url from login path if not available in the host app response
         if (!response.hasOwnProperty("url") || response.url.length == 0) {
           var parts = entry.split(/\//).reverse();
           for (var i in parts) {
@@ -259,10 +259,10 @@ function launchURL() {
             }
           }
         }
-        // get url from password file
+        // if a url is present, then launch a new tab via the background script
         if (response.hasOwnProperty("url") && response.url.length > 0) {
           var url = response.url.match(/^([a-z]+:)?\/\//i) ? response.url : "http://" + response.url;
-          chrome.tabs.create({url: url});
+          chrome.runtime.sendMessage({action: "launch", url: url, username: response.u, password: response.p});
           window.close();
         } else {
           // no url available

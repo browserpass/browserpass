@@ -9,7 +9,7 @@
     "page": "options.html"
   },
   "background": {
-    "persistent": false,
+    "persistent": true,
     "scripts": [
       "background.js"
     ]
@@ -26,6 +26,8 @@
     "nativeMessaging",
     "notifications",
     "storage",
+    "webRequest",
+    "webRequestBlocking",
     "http://*/*",
     "https://*/*"
   ],

@@ -7,7 +7,7 @@
   "author": "Danny van Kooten",
   "homepage_url": "https://github.com/dannyvankooten/browserpass",
   "background": {
-    "persistent": false,
+    "persistent": true,
     "scripts": [
       "background.js"
     ]
@@ -28,6 +28,8 @@
     "nativeMessaging",
     "notifications",
     "storage",
+    "webRequest",
+    "webRequestBlocking",
     "http://*/*",
     "https://*/*"
   ],

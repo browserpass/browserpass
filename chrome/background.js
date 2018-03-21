@@ -95,6 +95,42 @@ function onMessage(request, sender, sendResponse) {
       localStorage.getItem("use_fuzzy_search") != "false";
     sendResponse({ use_fuzzy_search: use_fuzzy_search });
   }
+
+  // spawn a new tab with pre-provided credentials
+  if (request.action == "launch") {
+    chrome.tabs.create({url: request.url}, function (tab) {
+      var authAttempted = false;
+      chrome.webRequest.onAuthRequired.addListener(
+	function authListener(requestDetails) {
+	  // remove event listeners once tab loading is complete
+	  chrome.tabs.onUpdated.addListener(function statusListener(tabId, info) {
+	    if (info.status === "complete") {
+	      chrome.tabs.onUpdated.removeListener(statusListener);
+	      chrome.webRequest.onAuthRequired.removeListener(authListener);
+	    }
+	  });
+	  // only supply credentials if this is the first time for this tab
+	  if (!authAttempted) {
+	    authAttempted = true;
+            // ask the user before sending credentials over an insecure connection
+            if (!requestDetails.url.match(/^https:/i)) {
+              var message =
+                "You are about to submit login credentials via an insecure protocol!\n\n" +
+                "Are you sure you want to do this?\n\n" +
+                "URL: " + requestDetails.url
+                ;
+              if (!confirm(message)) {
+                return {};
+              }
+            }
+	    return {authCredentials: {username: request.username, password: request.password}};
+	  }
+	},
+	{urls: ["*://*/*"], tabId: tab.id},
+	["blocking"]
+      );
+    });
+  }
 }
 
 function onTabUpdated(tabId, changeInfo, tab) {
