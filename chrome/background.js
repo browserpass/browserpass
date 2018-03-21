@@ -106,6 +106,7 @@ function onMessage(request, sender, sendResponse) {
           if (authAttempted) {
             return {};
           }
+          authAttempted = true;
           // remove event listeners once tab loading is complete
           chrome.tabs.onUpdated.addListener(function statusListener(tabId, info) {
               if (info.status === "complete") {
@@ -113,7 +114,6 @@ function onMessage(request, sender, sendResponse) {
               chrome.webRequest.onAuthRequired.removeListener(authListener);
               }
           });
-          authAttempted = true;
           // ask the user before sending credentials over an insecure connection
           if (!requestDetails.url.match(/^https:/i)) {
             var message =
