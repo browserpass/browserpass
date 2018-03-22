@@ -102,83 +102,79 @@ function onMessage(request, sender, sendResponse) {
       var tabLoaded = false;
       var authAttempted = false;
 
+      // listener function for authentication interception
+      function authListener(requestDetails) {
+        // only supply credentials if this is the first time for this tab, and the tab is not loaded
+        if (authAttempted) {
+          return {};
+        }
+        authAttempted = true;
+
+        // don't supply credentials for loaded tabs
+        if (tabLoaded) {
+          return {};
+        }
+
+        // ask the user before sending credentials to a different domain
+        var launchHost = request.url.match(/:\/\/([^\/]+)/)[1];
+        if (launchHost !== requestDetails.challenger.host) {
+          var message =
+            "You are about to send login credentials to a domain that is different than " +
+            "the one you lauched from the browserpass extension. Do you wish to proceed?\n\n" +
+            "Launched URL: " +
+            request.url +
+            "\n" +
+            "Authentication URL: " +
+            requestDetails.url;
+          if (!confirm(message)) {
+            return {};
+          }
+        }
+
+        // ask the user before sending credentials over an insecure connection
+        if (!requestDetails.url.match(/^https:/i)) {
+          var message =
+            "You are about to send login credentials via an insecure connection!\n\n" +
+            "Are you sure you want to do this? If there is an attacker watching your " +
+            "network traffic, they may be able to see your username and password.\n\n" +
+            "URL: " +
+            requestDetails.url;
+          if (!confirm(message)) {
+            return {};
+          }
+        }
+
+        // supply credentials
+        return {
+          authCredentials: {
+            username: request.username,
+            password: request.password
+          }
+        };
+      }
+
+      // intercept requests for authentication
+      chrome.webRequest.onAuthRequired.addListener(
+        authListener,
+        { urls: ["*://*/*"], tabId: tab.id },
+        ["blocking"]
+      );
+
       // notice when the tab has been loaded
       chrome.tabs.onUpdated.addListener(function tabCompleteListener(
         tabId,
         info
       ) {
         if (tabId == tab.id && info.status == "complete") {
+          // remove listeners
           chrome.tabs.onUpdated.removeListener(tabCompleteListener);
+          chrome.webRequest.onAuthRequired.removeListener(authListener);
+
+          // mark tab as loaded & wipe credentials
           tabLoaded = true;
           request.username = request.password = null;
         }
       });
-
-      // intercept requests for authentication
-      chrome.webRequest.onAuthRequired.addListener(
-        function authListener(requestDetails) {
-          // only supply credentials if this is the first time for this tab, and the tab is not loaded
-          if (authAttempted) {
-            return {};
-          }
-          authAttempted = true;
-
-          // remove event listeners once tab loading is complete
-          chrome.tabs.onUpdated.addListener(function statusListener(
-            tabId,
-            info
-          ) {
-            if (tabId == tab.id && info.status === "complete") {
-              chrome.tabs.onUpdated.removeListener(statusListener);
-              chrome.webRequest.onAuthRequired.removeListener(authListener);
-            }
-          });
-
-          // don't supply credentials for loaded tabs
-          if (tabLoaded) {
-            return {};
-          }
-
-          // ask the user before sending credentials to a different domain
-          var launchHost = request.url.match(/:\/\/([^\/]+)/)[1];
-          if (launchHost !== requestDetails.challenger.host) {
-            var message =
-              "You are about to send login credentials to a domain that is different than " +
-              "the one you lauched from the browserpass extension. Do you wish to proceed?\n\n" +
-              "Launched URL: " +
-              request.url +
-              "\n" +
-              "Authentication URL: " +
-              requestDetails.url;
-            if (!confirm(message)) {
-              return {};
-            }
-          }
-
-          // ask the user before sending credentials over an insecure connection
-          if (!requestDetails.url.match(/^https:/i)) {
-            var message =
-              "You are about to send login credentials via an insecure connection!\n\n" +
-              "Are you sure you want to do this? If there is an attacker watching your " +
-              "network traffic, they may be able to see your username and password.\n\n" +
-              "URL: " +
-              requestDetails.url;
-            if (!confirm(message)) {
-              return {};
-            }
-          }
-
-          // supply credentials
-          return {
-            authCredentials: {
-              username: request.username,
-              password: request.password
-            }
-          };
-        },
-        { urls: ["*://*/*"], tabId: tab.id },
-        ["blocking"]
-      );
     });
   }
 }
