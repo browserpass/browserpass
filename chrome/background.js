@@ -99,14 +99,28 @@ function onMessage(request, sender, sendResponse) {
   // spawn a new tab with pre-provided credentials
   if (request.action == "launch") {
     chrome.tabs.create({ url: request.url }, function(tab) {
+      var tabLoaded = false;
       var authAttempted = false;
+
+      // notice when the tab has been loaded
+      chrome.tabs.onUpdated.addListener(function tabCompleteListener(
+        tabId,
+        info
+      ) {
+        chrome.tabs.onUpdated.removeListener(tabCompleteListener);
+        tabLoaded = true;
+        request.username = request.password = null;
+      });
+
+      // intercept requests for authentication
       chrome.webRequest.onAuthRequired.addListener(
         function authListener(requestDetails) {
-          // only supply credentials if this is the first time for this tab
+          // only supply credentials if this is the first time for this tab, and the tab is not loaded
           if (authAttempted) {
             return {};
           }
           authAttempted = true;
+
           // remove event listeners once tab loading is complete
           chrome.tabs.onUpdated.addListener(function statusListener(
             tabId,
@@ -117,6 +131,12 @@ function onMessage(request, sender, sendResponse) {
               chrome.webRequest.onAuthRequired.removeListener(authListener);
             }
           });
+
+          // don't supply credentials for loaded tabs
+          if (tabLoaded) {
+            return {};
+          }
+
           // ask the user before sending credentials to a different domain
           var launchHost = request.url.match(/:\/\/([^\/]+)/)[1];
           if (launchHost !== requestDetails.challenger.host) {
@@ -132,6 +152,7 @@ function onMessage(request, sender, sendResponse) {
               return {};
             }
           }
+
           // ask the user before sending credentials over an insecure connection
           if (!requestDetails.url.match(/^https:/i)) {
             var message =
@@ -144,6 +165,8 @@ function onMessage(request, sender, sendResponse) {
               return {};
             }
           }
+
+          // supply credentials
           return {
             authCredentials: {
               username: request.username,
