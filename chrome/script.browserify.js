@@ -34,9 +34,10 @@ function view() {
         m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
+      const autoSubmit = localStorage.getItem("autoSubmit") == "true";
       results = logins.map(function(login) {
         let selector = "button.login";
-        let options = { onclick: getLoginData.bind(login), title: "Fill form" + (localStorage.getItem("autoSubmit") ? " and submit" : "") };
+        let options = { onclick: getLoginData.bind(login), title: "Fill form" + (autoSubmit ? " and submit" : "") };
 
         let faviconUrl = getFaviconUrl(domain);
         if (faviconUrl) {
