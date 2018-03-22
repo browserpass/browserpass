@@ -107,9 +107,11 @@ function onMessage(request, sender, sendResponse) {
         tabId,
         info
       ) {
-        chrome.tabs.onUpdated.removeListener(tabCompleteListener);
-        tabLoaded = true;
-        request.username = request.password = null;
+        if (tabId == tab.id && info.status == "complete") {
+          chrome.tabs.onUpdated.removeListener(tabCompleteListener);
+          tabLoaded = true;
+          request.username = request.password = null;
+        }
       });
 
       // intercept requests for authentication
