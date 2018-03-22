@@ -117,6 +117,21 @@ function onMessage(request, sender, sendResponse) {
               chrome.webRequest.onAuthRequired.removeListener(authListener);
             }
           });
+          // ask the user before sending credentials to a different domain
+          var launchHost = request.url.match(/:\/\/([^\/]+)/)[1];
+          if (launchHost !== requestDetails.challenger.host) {
+            var message =
+              "You are about to send login credentials to a domain that is different than " +
+              "the one you lauched from the browserpass extension. Do you wish to proceed?\n\n" +
+              "Launched URL: " +
+              request.url +
+              "\n" +
+              "Authentication URL: " +
+              requestDetails.url;
+            if (!confirm(message)) {
+              return {};
+            }
+          }
           // ask the user before sending credentials over an insecure connection
           if (!requestDetails.url.match(/^https:/i)) {
             var message =
