@@ -1,7 +1,6 @@
 package pass
 
 import (
-	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -9,7 +8,8 @@ import (
 )
 
 func TestDefaultStorePath(t *testing.T) {
-	var home, expected, actual string
+	var home, expectedCustom string
+	var expected, actual []string
 
 	usr, err := user.Current()
 
@@ -21,42 +21,47 @@ func TestDefaultStorePath(t *testing.T) {
 
 	// default directory
 	os.Setenv("PASSWORD_STORE_DIR", "")
-	expected = filepath.Join(home, ".password-store")
+	expected = []string{filepath.Join(home, ".password-store")}
 	actual, _ = defaultStorePath()
-	if expected != actual {
-		t.Errorf("1: '%s' does not match '%s'", expected, actual)
+
+	if len(expected) != len(actual) {
+		t.Errorf("1: '%d' does not match '%d'", len(expected), len(actual))
+	}
+
+	if expected[0] != actual[0] {
+		t.Errorf("2: '%s' does not match '%s'", expected[0], actual[0])
 	}
 
 	// custom directory from $PASSWORD_STORE_DIR
-	expected, err = filepath.Abs("browserpass-test")
+	expectedCustom, err = filepath.Abs("browserpass-test")
 	if err != nil {
 		t.Error(err)
 	}
+	expected = []string{expectedCustom}
 
-	fmt.Println(expected)
-	os.Mkdir(expected, os.ModePerm)
-	os.Setenv("PASSWORD_STORE_DIR", expected)
+	os.Mkdir(expectedCustom, os.ModePerm)
+	os.Setenv("PASSWORD_STORE_DIR", expectedCustom)
 	actual, err = defaultStorePath()
 	if err != nil {
 		t.Error(err)
 	}
-	if expected != actual {
-		t.Errorf("2: '%s' does not match '%s'", expected, actual)
+	if len(expected) != len(actual) {
+		t.Errorf("3: '%d' does not match '%d'", len(expected), len(actual))
+	}
+	if expected[0] != actual[0] {
+		t.Errorf("4: '%s' does not match '%s'", expected[0], actual[0])
 	}
 
 	// clean-up
 	os.Setenv("PASSWORD_STORE_DIR", "")
-	os.Remove(expected)
+	os.Remove(expected[0])
 }
 
 func TestDiskStore_Search_nomatch(t *testing.T) {
-	s, err := NewDefaultStore()
-	if err != nil {
-		t.Fatal(err)
-	}
+	store := diskStore{[]string{"test_store"}, false}
 
 	domain := "this-most-definitely-does-not-exist"
-	logins, err := s.Search(domain)
+	logins, err := store.Search(domain)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +71,7 @@ func TestDiskStore_Search_nomatch(t *testing.T) {
 }
 
 func TestDiskStoreSearch(t *testing.T) {
-	store := diskStore{"test_store", false}
+	store := diskStore{[]string{"test_store"}, false}
 	targetDomain := "abc.com"
 	testDomains := []string{"abc.com", "test.abc.com", "testing.test.abc.com"}
 	for _, domain := range testDomains {
@@ -89,7 +94,7 @@ func TestDiskStoreSearch(t *testing.T) {
 }
 
 func TestDiskStoreSearchNoDuplicatesWhenPatternMatchesDomainAndUsername(t *testing.T) {
-	store := diskStore{"test_store", false}
+	store := diskStore{[]string{"test_store"}, false}
 	searchResult, err := store.Search("xyz")
 	if err != nil {
 		t.Fatal(err)
@@ -104,7 +109,7 @@ func TestDiskStoreSearchNoDuplicatesWhenPatternMatchesDomainAndUsername(t *testi
 }
 
 func TestDiskStoreSearchFollowsSymlinkFiles(t *testing.T) {
-	store := diskStore{"test_store", false}
+	store := diskStore{[]string{"test_store"}, false}
 	searchResult, err := store.Search("def.com")
 	if err != nil {
 		t.Fatal(err)
@@ -119,7 +124,7 @@ func TestDiskStoreSearchFollowsSymlinkFiles(t *testing.T) {
 }
 
 func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
-	store := diskStore{"test_store", false}
+	store := diskStore{[]string{"test_store"}, false}
 	searchResult, err := store.Search("amazon.co.uk")
 	if err != nil {
 		t.Fatal(err)
@@ -134,7 +139,7 @@ func TestDiskStoreSearchFollowsSymlinkDirectories(t *testing.T) {
 }
 
 func TestDiskStoreSearchSubDirectories(t *testing.T) {
-	store := diskStore{"test_store", false}
+	store := diskStore{[]string{"test_store"}, false}
 	searchTermsMatches := map[string][]string{
 		"abc.org": []string{"abc.org/user3", "abc.org/wiki/user4", "abc.org/wiki/work/user5"},
 		"wiki":    []string{"abc.org/wiki/user4", "abc.org/wiki/work/user5"},
@@ -158,7 +163,7 @@ func TestDiskStoreSearchSubDirectories(t *testing.T) {
 }
 
 func TestDiskStorePartSearch(t *testing.T) {
-	store := diskStore{"test_store", false}
+	store := diskStore{[]string{"test_store"}, false}
 	searchResult, err := store.Search("ab")
 	if err != nil {
 		t.Fatal(err)
@@ -175,14 +180,14 @@ func TestDiskStorePartSearch(t *testing.T) {
 }
 
 func TestFuzzySearch(t *testing.T) {
-	store := diskStore{"test_store", true}
+	store := diskStore{[]string{"test_store"}, true}
 	searchResult, err := store.Search("amaz2")
 
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(searchResult) != 2 {
-		t.Fatalf("Result size was: %s expected 2", len(searchResult))
+		t.Fatalf("Result size was: %d expected 2", len(searchResult))
 	}
 
 	expectedResult := map[string]bool{
@@ -198,26 +203,26 @@ func TestFuzzySearch(t *testing.T) {
 }
 
 func TestFuzzySearchNoResult(t *testing.T) {
-	store := diskStore{"test_store", true}
+	store := diskStore{[]string{"test_store"}, true}
 	searchResult, err := store.Search("vvv")
 
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(searchResult) != 0 {
-		t.Fatalf("Result size was: %s expected 0", len(searchResult))
+		t.Fatalf("Result size was: %d expected 0", len(searchResult))
 	}
 }
 
 func TestFuzzySearchTopLevelEntries(t *testing.T) {
-	store := diskStore{"test_store", true}
+	store := diskStore{[]string{"test_store"}, true}
 	searchResult, err := store.Search("def")
 
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(searchResult) != 1 {
-		t.Fatalf("Result size was: %s expected 1", len(searchResult))
+		t.Fatalf("Result size was: %d expected 1", len(searchResult))
 	}
 
 	expectedResult := map[string]bool{
