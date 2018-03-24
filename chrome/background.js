@@ -59,7 +59,7 @@ function onMessage(request, sender, sendResponse) {
   if (request.action == "login") {
     chrome.runtime.sendNativeMessage(
       app,
-      { action: "get", entry: request.entry },
+      { action: "get", entry: request.entry, settings: getSettings() },
       function(response) {
         if (chrome.runtime.lastError) {
           var error = chrome.runtime.lastError.message;
@@ -92,9 +92,7 @@ function onMessage(request, sender, sendResponse) {
   // object that has current settings. Update this as new settings
   // are added (or old ones removed)
   if (request.action == "getSettings") {
-    const use_fuzzy_search =
-      localStorage.getItem("use_fuzzy_search") != "false";
-    sendResponse({ use_fuzzy_search: use_fuzzy_search });
+    sendResponse(getSettings());
   }
 
   // spawn a new tab with pre-provided credentials
@@ -119,6 +117,14 @@ function onMessage(request, sender, sendResponse) {
       );
     });
   }
+}
+
+function getSettings() {
+  const use_fuzzy_search = localStorage.getItem("use_fuzzy_search") != "false";
+  const paths = JSON.parse(localStorage.getItem("paths") || "[]")
+    .filter(path => path.enabled)
+    .map(path => path.path);
+  return { paths: paths, use_fuzzy_search: use_fuzzy_search };
 }
 
 // listener function for authentication interception

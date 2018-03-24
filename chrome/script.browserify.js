@@ -204,10 +204,10 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   // by requesting them from the background script (which has localStorage access
   // to the settings). Then construct the message to send to browserpass and
   // send that via sendNativeMessage.
-  chrome.runtime.sendMessage({ action: "getSettings" }, function(response) {
+  chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
     chrome.runtime.sendNativeMessage(
       app,
-      { action: action, domain: _domain, settings: response },
+      { action: action, domain: _domain, settings: settings },
       function(response) {
         if (chrome.runtime.lastError) {
           error = chrome.runtime.lastError.message;
@@ -250,57 +250,59 @@ function getFaviconUrl(domain) {
 function launchURL() {
   var what = this.what;
   var entry = this.entry;
-  chrome.runtime.sendNativeMessage(
-    app,
-    { action: "get", entry: this.entry },
-    function(response) {
-      if (chrome.runtime.lastError) {
-        error = chrome.runtime.lastError.message;
-        m.redraw();
-        return;
-      }
-      // get url from login path if not available in the host app response
-      if (!response.hasOwnProperty("url") || response.url.length == 0) {
-        var parts = entry.split(/\//).reverse();
-        for (var i in parts) {
-          var part = parts[i];
-          var info = Tldjs.parse(part);
-          if (
-            info.isValid &&
-            info.tldExists &&
-            info.domain !== null &&
-            info.hostname === part
-          ) {
-            response.url = part;
-            break;
+  chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
+    chrome.runtime.sendNativeMessage(
+      app,
+      { action: "get", entry: entry, settings: settings },
+      function(response) {
+        if (chrome.runtime.lastError) {
+          error = chrome.runtime.lastError.message;
+          m.redraw();
+          return;
+        }
+        // get url from login path if not available in the host app response
+        if (!response.hasOwnProperty("url") || response.url.length == 0) {
+          var parts = entry.split(/\//).reverse();
+          for (var i in parts) {
+            var part = parts[i];
+            var info = Tldjs.parse(part);
+            if (
+              info.isValid &&
+              info.tldExists &&
+              info.domain !== null &&
+              info.hostname === part
+            ) {
+              response.url = part;
+              break;
+            }
           }
         }
+        // if a url is present, then launch a new tab via the background script
+        if (response.hasOwnProperty("url") && response.url.length > 0) {
+          var url = response.url.match(/^([a-z]+:)?\/\//i)
+            ? response.url
+            : "http://" + response.url;
+          chrome.runtime.sendMessage({
+            action: "launch",
+            url: url,
+            username: response.u,
+            password: response.p
+          });
+          window.close();
+          return;
+        }
+        // no url available
+        if (!response.hasOwnProperty("url")) {
+          resetWithError(
+            "Unable to determine the URL for this entry. If you have defined one in the password file, " +
+              "your host application must be at least v2.0.14 for this to be usable."
+          );
+        } else {
+          resetWithError("Unable to determine the URL for this entry.");
+        }
       }
-      // if a url is present, then launch a new tab via the background script
-      if (response.hasOwnProperty("url") && response.url.length > 0) {
-        var url = response.url.match(/^([a-z]+:)?\/\//i)
-          ? response.url
-          : "http://" + response.url;
-        chrome.runtime.sendMessage({
-          action: "launch",
-          url: url,
-          username: response.u,
-          password: response.p
-        });
-        window.close();
-        return;
-      }
-      // no url available
-      if (!response.hasOwnProperty("url")) {
-        resetWithError(
-          "Unable to determine the URL for this entry. If you have defined one in the password file, " +
-            "your host application must be at least v2.0.14 for this to be usable."
-        );
-      } else {
-        resetWithError("Unable to determine the URL for this entry.");
-      }
-    }
-  );
+    );
+  });
 }
 
 function getLoginData() {
@@ -326,23 +328,26 @@ function getLoginData() {
 
 function loginToClipboard() {
   var what = this.what;
-  chrome.runtime.sendNativeMessage(
-    app,
-    { action: "get", entry: this.entry },
-    function(response) {
-      if (chrome.runtime.lastError) {
-        error = chrome.runtime.lastError.message;
-        m.redraw();
-      } else {
-        if (what === "password") {
-          toClipboard(response.p);
-        } else if (what === "username") {
-          toClipboard(response.u);
+  var entry = this.entry;
+  chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
+    chrome.runtime.sendNativeMessage(
+      app,
+      { action: "get", entry: entry, settings: settings },
+      function(response) {
+        if (chrome.runtime.lastError) {
+          error = chrome.runtime.lastError.message;
+          m.redraw();
+        } else {
+          if (what === "password") {
+            toClipboard(response.p);
+          } else if (what === "username") {
+            toClipboard(response.u);
+          }
+          window.close();
         }
-        window.close();
       }
-    }
-  );
+    );
+  });
 }
 
 function toClipboard(s) {
