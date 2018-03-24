@@ -18,8 +18,8 @@ endif
 
 .PHONY: prettier
 prettier:
-	prettier --write "chrome/*.js"
-	prettier --write "chrome/*.css"
+	yarn run prettier --write "chrome/*.js"
+	yarn run prettier --write "chrome/*.css"
 
 .PHONY: js
 js: $(JS_OUTPUT)

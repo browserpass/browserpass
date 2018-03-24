@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "prettier": "prettier"
+  },
   "dependencies": {
     "browserify": "^14.4.0",
     "fuzzysort": "^1.1.0",
