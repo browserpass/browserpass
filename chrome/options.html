@@ -9,16 +9,43 @@
 <body>
 
 <label>
-  <input type="checkbox" id="auto-submit">
+  <input type="checkbox" id="auto-submit" />
   Auto-Submit login forms
 </label>
 <br/>
+<br/>
+
 <label>
-  <input type="checkbox" id="use-fuzzy">
+  <input type="checkbox" id="use-fuzzy" />
   Use fuzzy search
 </label>
 <br/>
 <br/>
+
+Custom password stores directories: <br/>
+<div class="password-store-group">
+  <input type="checkbox" class="password-store-path-enabled" />
+  <input type="text" class="password-store-path" placeholder="~/.password-store" />
+</div>
+<div class="password-store-group">
+  <input type="checkbox" class="password-store-path-enabled" />
+  <input type="text" class="password-store-path" />
+</div>
+<div class="password-store-group">
+  <input type="checkbox" class="password-store-path-enabled" />
+  <input type="text" class="password-store-path" />
+</div>
+<div class="password-store-group">
+  <input type="checkbox" class="password-store-path-enabled" />
+  <input type="text" class="password-store-path" />
+</div>
+<div class="password-store-group">
+  <input type="checkbox" class="password-store-path-enabled" />
+  <input type="text" class="password-store-path" />
+</div>
+<br/>
+<br/>
+
 <button id="save">Save</button>
 
 <script src="options.js"></script>
