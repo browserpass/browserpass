@@ -11,6 +11,7 @@ firefox/*
 !firefox/host.json
 !firefox/manifest.json
 chrome/script.js
+chrome/options.js
 node_modules
 .vagrant/
 vendor/
