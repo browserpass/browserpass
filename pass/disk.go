@@ -113,7 +113,6 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 		allMatches := append(matches, matches2...)
 
 		for i, match := range allMatches {
-			// TODO this does not handle identical file names in multiple s.paths
 			item, err := filepath.Rel(store.Path, match)
 			if err != nil {
 				return nil, err
