@@ -58,7 +58,7 @@ function view() {
 
         return m("div.entry", [
           m(selector, options, [
-	    store != "default" ? m("div.store", store) : null,
+	    (i > 0 && store != "default") ? m("div.store", store) : null,
 	    m("div.name", name)
 	  ]),
           m("button.launch.url", {
