@@ -11,7 +11,7 @@ var settings = {
   },
   customStores: {
     title: "Custom password store locations",
-    value: [{enabled: true, name: "", path: ""}],
+    value: [{ enabled: true, name: "", path: "" }]
   }
 };
 
@@ -30,12 +30,22 @@ var tree = {
     for (var key in settings.customStores.value) {
       nodes.push(createCustomStore(key, settings.customStores.value[key]));
     }
-    nodes.push(m("button.add-store", {
-      onclick: function() {
-        settings.customStores.value.push({enabled: true, name: "", path: ""});
-        saveSetting("customStores");
-      }
-    }, "Add Store"));
+    nodes.push(
+      m(
+        "button.add-store",
+        {
+          onclick: function() {
+            settings.customStores.value.push({
+              enabled: true,
+              name: "",
+              path: ""
+            });
+            saveSetting("customStores");
+          }
+        },
+        "Add Store"
+      )
+    );
     return nodes;
   }
 };
@@ -66,7 +76,7 @@ function saveSetting(name) {
 
 // create a checkbox option
 function createCheckbox(name, option) {
-  return m("div.option", {class: name}, [
+  return m("div.option", { class: name }, [
     m("input[type=checkbox]", {
       name: name,
       title: option.title,
@@ -76,13 +86,13 @@ function createCheckbox(name, option) {
         saveSetting(name);
       }
     }),
-    m("label", {for: name}, option.title)
+    m("label", { for: name }, option.title)
   ]);
 }
 
 // create a custom store option
 function createCustomStore(key, store) {
-  return m("div.option.custom-store", {class: "store-" + store.name}, [
+  return m("div.option.custom-store", { class: "store-" + store.name }, [
     m("input[type=checkbox]", {
       title: "Whether to enable this password store",
       checked: store.enabled,
@@ -109,12 +119,16 @@ function createCustomStore(key, store) {
         saveSetting("customStores");
       }
     }),
-    m("a.remove", {
-      title: "Remove this password store",
-      onclick: function() {
-        delete settings.customStores.value[key];
-        saveSetting("customStores");
-      }
-    }, "[X]")
+    m(
+      "a.remove",
+      {
+        title: "Remove this password store",
+        onclick: function() {
+          delete settings.customStores.value[key];
+          saveSetting("customStores");
+        }
+      },
+      "[X]"
+    )
   ]);
 }

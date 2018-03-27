@@ -42,15 +42,15 @@ function view() {
           title: "Fill form" + (searchSettings.autoSubmit ? " and submit" : "")
         };
 
-	var store = "default";
-	var name = login;
-	var i;
-	if (i = login.indexOf(':')) {
+        var store = "default";
+        var name = login;
+        var i;
+        if ((i = login.indexOf(":"))) {
           if (searchSettings.customStores.length > 1) {
             store = login.substr(0, i);
           }
-	  name = login.substr(++i);
-	}
+          name = login.substr(++i);
+        }
 
         let faviconUrl = getFaviconUrl(domain);
         if (faviconUrl) {
@@ -60,9 +60,9 @@ function view() {
 
         return m("div.entry", [
           m(selector, options, [
-	    (i > 0 && store != "default") ? m("div.store", store) : null,
-	    m("div.name", name)
-	  ]),
+            i > 0 && store != "default" ? m("div.store", store) : null,
+            m("div.name", name)
+          ]),
           m("button.launch.url", {
             onclick: launchURL.bind({ entry: login, what: "url" }),
             title: "Visit URL",
@@ -209,7 +209,7 @@ function init(tab) {
 function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   // don't run searches for empty queries or ignored URLs
   _domain = _domain.trim();
-  var ignore = ["newtab", "extensions"]
+  var ignore = ["newtab", "extensions"];
   if (!_domain.length || ignore.indexOf(_domain) >= 0) {
     return;
   }
@@ -237,7 +237,7 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
 
         searching = false;
 
-        if (typeof(response) == "string") {
+        if (typeof response == "string") {
           error = response;
           m.redraw();
           return;
@@ -290,7 +290,10 @@ function launchURL() {
         }
         // get url from login path if not available in the host app response
         if (!response.hasOwnProperty("url") || response.url.length == 0) {
-          var parts = (entry.indexOf(":") > 0) ? entry.substr(entry.indexOf(":") + 1) : entry;
+          var parts =
+            entry.indexOf(":") > 0
+              ? entry.substr(entry.indexOf(":") + 1)
+              : entry;
           parts = parts.split(/\//).reverse();
           for (var i in parts) {
             var part = parts[i];

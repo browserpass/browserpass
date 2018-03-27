@@ -137,8 +137,7 @@ function getSettings() {
         store.name = store.path;
       }
       return store;
-    })
-    ;
+    });
 
   return settings;
 }
