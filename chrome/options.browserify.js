@@ -1,4 +1,3 @@
-var dirty = [];
 var settings = {
   autoSubmit: {
     type: "checkbox",
