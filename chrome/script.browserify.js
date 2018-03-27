@@ -11,6 +11,7 @@ var logins = [];
 var fillOnSubmit = false;
 var error;
 var domain, urlDuringSearch;
+var searchSettings;
 
 m.mount(document.getElementById("mount"), { view: view, oncreate: oncreate });
 
@@ -34,13 +35,22 @@ function view() {
         m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
-      const autoSubmit = localStorage.getItem("autoSubmit") == "true";
       results = logins.map(function(login) {
         let selector = "button.login";
         let options = {
           onclick: getLoginData.bind(login),
-          title: "Fill form" + (autoSubmit ? " and submit" : "")
+          title: "Fill form" + (searchSettings.autoSubmit ? " and submit" : "")
         };
+
+	var store = "default";
+	var name = login;
+	var i;
+	if (i = login.indexOf(':')) {
+          if (searchSettings.customStores.length > 1) {
+            store = login.substr(0, i);
+          }
+	  name = login.substr(++i);
+	}
 
         let faviconUrl = getFaviconUrl(domain);
         if (faviconUrl) {
@@ -49,7 +59,10 @@ function view() {
         }
 
         return m("div.entry", [
-          m(selector, options, login),
+          m(selector, options, [
+	    (i > 0 && store != "default") ? m("div.store", store) : null,
+	    m("div.name", name)
+	  ]),
           m("button.launch.url", {
             onclick: launchURL.bind({ entry: login, what: "url" }),
             title: "Visit URL",
@@ -194,6 +207,13 @@ function init(tab) {
 }
 
 function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
+  // don't run searches for empty queries or ignored URLs
+  _domain = _domain.trim();
+  var ignore = ["newtab", "extensions"]
+  if (!_domain.length || ignore.indexOf(_domain) >= 0) {
+    return;
+  }
+
   searching = true;
   logins = resultLogins = [];
   domain = _domain;
@@ -205,6 +225,7 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   // to the settings). Then construct the message to send to browserpass and
   // send that via sendNativeMessage.
   chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
+    searchSettings = settings;
     chrome.runtime.sendNativeMessage(
       app,
       { action: action, domain: _domain, settings: settings },
@@ -215,6 +236,13 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
         }
 
         searching = false;
+
+        if (typeof(response) == "string") {
+          error = response;
+          m.redraw();
+          return;
+        }
+
         logins = resultLogins = response ? response : [];
         document.getElementById("filter-search").textContent = domain;
         fillOnSubmit = useFillOnSubmit && logins.length > 0;
@@ -262,7 +290,8 @@ function launchURL() {
         }
         // get url from login path if not available in the host app response
         if (!response.hasOwnProperty("url") || response.url.length == 0) {
-          var parts = entry.split(/\//).reverse();
+          var parts = (entry.indexOf(":") > 0) ? entry.substr(entry.indexOf(":") + 1) : entry;
+          parts = parts.split(/\//).reverse();
           for (var i in parts) {
             var part = parts[i];
             var info = Tldjs.parse(part);

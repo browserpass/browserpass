@@ -12,12 +12,6 @@ chrome.runtime.onInstalled.addListener(onExtensionInstalled);
 // fill login form & submit
 function fillLoginForm(login, tab) {
   const loginParam = JSON.stringify(login);
-  const autoSubmit = localStorage.getItem("autoSubmit");
-  const autoSubmitParam = autoSubmit == "true";
-  if (autoSubmit === null) {
-    localStorage.setItem("autoSubmit", autoSubmitParam);
-  }
-
   chrome.tabs.executeScript(
     tab.id,
     {
@@ -27,7 +21,7 @@ function fillLoginForm(login, tab) {
     function() {
       chrome.tabs.executeScript({
         allFrames: true,
-        code: `browserpassFillForm(${loginParam}, ${autoSubmitParam});`
+        code: `browserpassFillForm(${loginParam}, ${getSettings().autoSubmit});`
       });
     }
   );
@@ -120,11 +114,33 @@ function onMessage(request, sender, sendResponse) {
 }
 
 function getSettings() {
-  const use_fuzzy_search = localStorage.getItem("use_fuzzy_search") != "false";
-  const paths = JSON.parse(localStorage.getItem("paths") || "[]")
-    .filter(path => path.enabled)
-    .map(path => path.path);
-  return { paths: paths, use_fuzzy_search: use_fuzzy_search };
+  // default settings
+  var settings = {
+    autoSubmit: false,
+    use_fuzzy_search: true,
+    customStores: []
+  };
+
+  // load settings from local storage
+  for (var key in settings) {
+    var value = localStorage.getItem(key);
+    if (value !== null) {
+      settings[key] = JSON.parse(value);
+    }
+  }
+
+  // filter custom stores by enabled & path length, and ensure they are named
+  settings.customStores = settings.customStores
+    .filter(store => store.enabled && store.path.length > 0)
+    .map(function(store) {
+      if (!store.name) {
+        store.name = store.path;
+      }
+      return store;
+    })
+    ;
+
+  return settings;
 }
 
 // listener function for authentication interception

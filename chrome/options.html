@@ -1,54 +1,69 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Browserpass Chrome extension for zx2c4's pass (password manager)</title>
-  <style>
-    body: { padding: 10px; }
-    .password-store-group { margin: 10px 0; }
-    .password-store-path { width: 90%; }
-    #save { margin-top: 20px; }
-  </style>
-</head>
-<body>
-
-<label>
-  <input type="checkbox" id="auto-submit" />
-  Auto-Submit login forms
-</label>
-<br/>
-<br/>
-
-<label>
-  <input type="checkbox" id="use-fuzzy" />
-  Use fuzzy search
-</label>
-<br/>
-<br/>
-
-Custom password stores directories: <br/>
-<div class="password-store-group">
-  <input type="checkbox" class="password-store-path-enabled" />
-  <input type="text" class="password-store-path" placeholder="/home/user/.password-store" />
-</div>
-<div class="password-store-group">
-  <input type="checkbox" class="password-store-path-enabled" />
-  <input type="text" class="password-store-path" />
-</div>
-<div class="password-store-group">
-  <input type="checkbox" class="password-store-path-enabled" />
-  <input type="text" class="password-store-path" />
-</div>
-<div class="password-store-group">
-  <input type="checkbox" class="password-store-path-enabled" />
-  <input type="text" class="password-store-path" />
-</div>
-<div class="password-store-group">
-  <input type="checkbox" class="password-store-path-enabled" />
-  <input type="text" class="password-store-path" />
-</div>
-
-<button id="save">Save</button>
-
-<script src="options.js"></script>
-</body>
+  <head>
+    <title>Browserpass Chrome extension for zx2c4's pass (password manager)</title>
+    <style>
+      .option {
+        display: flex;
+        height: 16px;
+        line-height: 16px;
+        margin-bottom: 8px;
+      }
+      .option input[type=checkbox] {
+        height: 12px;
+        margin: 2px 6px 2px 0;
+        padding: 0;
+      }
+      .option.custom-store input[type=text] {
+        border: none;
+        border-bottom: 1px solid #AAA;
+        height: 16px;
+        line-height: 16px;
+        margin: -4px 0 0 0;
+        overflow: hidden;
+        padding: 0;
+        width: 25%;
+      }
+      .option.custom-store input[type=text].path {
+        margin-left: 6px;
+        width: calc(100% - 25% - 48px);
+      }
+      .option.custom-store a.remove {
+        color: #F00;
+        display: block;
+        height: 16px;
+        line-height: 16px;
+        margin: 0 0 0 6px;
+        padding: 0;
+        text-decoration: none;
+        width: 16px;
+      }
+      .add-store {
+        margin-top: 8px;
+      }
+      @-moz-document url-prefix() {
+        html, body {
+          box-sizing: border-box;
+          overflow: hidden;
+        }
+        body {
+          background: #FFF;
+          border: 1px solid #000;
+          font-family: sans;
+          margin: 2px;
+          padding: 12px;
+        }
+        .option.custom-store input[type=text] {
+          background: #FFF;
+          margin: 2px;
+        }
+        .option.custom-store a.remove {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script src="options.js"></script>
+  </body>
 </html>
