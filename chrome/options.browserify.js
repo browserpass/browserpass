@@ -94,7 +94,7 @@ function createCustomStore(key, store) {
     m("input[type=text].name", {
       title: "The name for this password store",
       value: store.name,
-      placeholder: "personal",
+      placeholder: "name",
       onchange: function(e) {
         store.name = e.target.value;
         saveSetting("customStore");
@@ -103,7 +103,7 @@ function createCustomStore(key, store) {
     m("input[type=text].path", {
       title: "The full path to this password store",
       value: store.path,
-      placeholder: "personal",
+      placeholder: "/path/to/store",
       onchange: function(e) {
         store.path = e.target.value;
         saveSetting("customStore");
