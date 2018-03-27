@@ -31,7 +31,7 @@ var tree = {
     for (var key in settings.customStore.value) {
       nodes.push(createCustomStore(key, settings.customStore.value[key]));
     }
-    nodes.push(m("a", {
+    nodes.push(m("button.add-store", {
       onclick: function() {
         settings.customStore.value.push({enabled: true, name: "", path: ""});
         saveSetting("customStore");

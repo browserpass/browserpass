@@ -9,9 +9,6 @@
         line-height: 16px;
         margin-bottom: 8px;
       }
-      .option:last-child {
-        margin-bottom: 0;
-      }
       .option input[type=checkbox] {
         height: 12px;
         margin: 2px 6px 2px 0;
@@ -40,6 +37,29 @@
         padding: 0;
         text-decoration: none;
         width: 16px;
+      }
+      .add-store {
+        margin-top: 8px;
+      }
+      @-moz-document url-prefix() {
+        html, body {
+          box-sizing: border-box;
+          overflow: hidden;
+        }
+        body {
+          background: #FFF;
+          border: 1px solid #000;
+          font-family: sans;
+          margin: 2px;
+          padding: 12px;
+        }
+        .option.custom-store input[type=text] {
+          background: #FFF;
+          margin: 2px;
+        }
+        .option.custom-store a.remove {
+          font-size: 12px;
+        }
       }
     </style>
   </head>
