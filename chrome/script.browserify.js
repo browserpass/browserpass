@@ -205,6 +205,13 @@ function init(tab) {
 }
 
 function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
+  // don't run searches for empty queries or ignored URLs
+  _domain = _domain.trim();
+  var ignore = ["newtab", "extensions"]
+  if (!_domain.length || ignore.indexOf(_domain) >= 0) {
+    return;
+  }
+
   searching = true;
   logins = resultLogins = [];
   domain = _domain;
