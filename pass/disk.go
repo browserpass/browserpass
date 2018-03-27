@@ -14,46 +14,51 @@ import (
 	sfuzzy "github.com/sahilm/fuzzy"
 )
 
+// StoreDefinition defines a password store object
+type StoreDefinition struct {
+    Name string `json:"name"`
+    Path string `json:"path"`
+}
+
 type diskStore struct {
-	paths    []string
+	Stores   []StoreDefinition
 	useFuzzy bool // Setting for FuzzySearch or GlobSearch in manual searches
 }
 
-func NewDefaultStore(paths []string, useFuzzy bool) (Store, error) {
-	if paths == nil || len(paths) == 0 {
-		defaultPaths, err := defaultStorePath()
+func NewDefaultStore(stores []StoreDefinition, useFuzzy bool) (Store, error) {
+	if stores == nil || len(stores) == 0 {
+		defaultPath, err := defaultStorePath()
 		if err != nil {
 			return nil, err
 		}
-		paths = defaultPaths
+		stores = []StoreDefinition{{Name: "default", Path: defaultPath}}
 	}
 
 	// Follow symlinks
-	finalPaths := make([]string, len(paths))
-	for i, path := range paths {
-		finalPath, err := filepath.EvalSymlinks(path)
+	for i, store := range stores {
+		finalPath, err := filepath.EvalSymlinks(store.Path)
 		if err != nil {
 			return nil, err
 		}
-		finalPaths[i] = finalPath
+		stores[i].Path = finalPath
 	}
 
-	return &diskStore{finalPaths, useFuzzy}, nil
+	return &diskStore{stores, useFuzzy}, nil
 }
 
-func defaultStorePath() ([]string, error) {
+func defaultStorePath() (string, error) {
 	path := os.Getenv("PASSWORD_STORE_DIR")
 	if path != "" {
-		return []string{path}, nil
+		return path, nil
 	}
 
 	usr, err := user.Current()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	path = filepath.Join(usr.HomeDir, ".password-store")
-	return []string{path}, nil
+	return path, nil
 }
 
 // Do a search. Will call into the correct algoritm (glob or fuzzy)
@@ -94,13 +99,13 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 
 	items := []string{}
 
-	for _, path := range s.paths {
-		matches, err := zglob.GlobFollowSymlinks(path + "/**/" + query + "*/**/*.gpg")
+	for _, store := range s.Stores {
+		matches, err := zglob.GlobFollowSymlinks(store.Path + "/**/" + query + "*/**/*.gpg")
 		if err != nil {
 			return nil, err
 		}
 
-		matches2, err := zglob.GlobFollowSymlinks(path + "/**/" + query + "*.gpg")
+		matches2, err := zglob.GlobFollowSymlinks(store.Path + "/**/" + query + "*.gpg")
 		if err != nil {
 			return nil, err
 		}
@@ -109,11 +114,11 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 
 		for i, match := range allMatches {
 			// TODO this does not handle identical file names in multiple s.paths
-			item, err := filepath.Rel(path, match)
+			item, err := filepath.Rel(store.Path, match)
 			if err != nil {
 				return nil, err
 			}
-			allMatches[i] = strings.TrimSuffix(item, ".gpg")
+			allMatches[i] = store.Name + ":" + strings.TrimSuffix(item, ".gpg")
 		}
 
 		items = append(items, allMatches...)
@@ -136,8 +141,13 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 }
 
 func (s *diskStore) Open(item string) (io.ReadCloser, error) {
-	for _, path := range s.paths {
-		path := filepath.Join(path, item+".gpg")
+	parts := strings.SplitN(item, ":", 2);
+
+	for _, store := range s.Stores {
+		if (store.Name != parts[0]) {
+			continue;
+		}
+		path := filepath.Join(store.Path, parts[1] + ".gpg")
 		f, err := os.Open(path)
 		if os.IsNotExist(err) {
 			continue
