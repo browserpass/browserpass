@@ -12,12 +12,6 @@ chrome.runtime.onInstalled.addListener(onExtensionInstalled);
 // fill login form & submit
 function fillLoginForm(login, tab) {
   const loginParam = JSON.stringify(login);
-  const autoSubmit = localStorage.getItem("autoSubmit");
-  const autoSubmitParam = autoSubmit == "true";
-  if (autoSubmit === null) {
-    localStorage.setItem("autoSubmit", autoSubmitParam);
-  }
-
   chrome.tabs.executeScript(
     tab.id,
     {
@@ -27,7 +21,7 @@ function fillLoginForm(login, tab) {
     function() {
       chrome.tabs.executeScript({
         allFrames: true,
-        code: `browserpassFillForm(${loginParam}, ${autoSubmitParam});`
+        code: `browserpassFillForm(${loginParam}, ${getSettings().autoSubmit});`
       });
     }
   );
