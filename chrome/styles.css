@@ -82,10 +82,11 @@ body {
 }
 
 .login {
+  display: flex;
   flex: 1;
   -webkit-appearance: none;
   -moz-appearance: none;
-  padding: 12px;
+  padding: 0 0 0 12px;
   cursor: pointer;
   border: 0;
   text-align: left;
@@ -100,6 +101,22 @@ body {
   background-position: left 8px center;
   background-size: 16px 16px;
   padding-left: 32px;
+}
+
+.login .store {
+  background-color: #090;
+  border-radius: 4px;
+  color: #FFF;
+  height: calc(100% - 24px);
+  line-height: 100%;
+  margin: 10px 4px 10px 0;
+  padding: 2px 4px;
+}
+
+.login .name {
+  height: 100%;
+  line-height: 100%;
+  padding: 12px 0;
 }
 
 .entry:last-of-type {

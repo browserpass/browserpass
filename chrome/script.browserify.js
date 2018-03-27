@@ -42,6 +42,14 @@ function view() {
           title: "Fill form" + (autoSubmit ? " and submit" : "")
         };
 
+	var store = "default";
+	var name = login;
+	var i;
+	if (i = login.indexOf(':')) {
+	  store = login.substr(0, i);
+	  name = login.substr(++i);
+	}
+
         let faviconUrl = getFaviconUrl(domain);
         if (faviconUrl) {
           selector += ".favicon";
@@ -49,7 +57,10 @@ function view() {
         }
 
         return m("div.entry", [
-          m(selector, options, login),
+          m(selector, options, [
+	    store != "default" ? m("div.store", store) : null,
+	    m("div.name", name)
+	  ]),
           m("button.launch.url", {
             onclick: launchURL.bind({ entry: login, what: "url" }),
             title: "Visit URL",
