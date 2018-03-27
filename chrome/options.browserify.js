@@ -11,7 +11,7 @@ var settings = {
   },
   customStore: {
     title: "Custom password store locations",
-    value: [{name: "one", enabled: true, name: "fish", path: "/home/fish"}],
+    value: [],
   }
 };
 
