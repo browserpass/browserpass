@@ -16,8 +16,8 @@ import (
 
 // StoreDefinition defines a password store object
 type StoreDefinition struct {
-    Name string `json:"name"`
-    Path string `json:"path"`
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 type diskStore struct {
@@ -34,13 +34,18 @@ func NewDefaultStore(stores []StoreDefinition, useFuzzy bool) (Store, error) {
 		stores = []StoreDefinition{{Name: "default", Path: defaultPath}}
 	}
 
-	// Follow symlinks
+	// Expand paths, follow symlinks
 	for i, store := range stores {
-		finalPath, err := filepath.EvalSymlinks(store.Path)
+		path := store.Path
+		if strings.HasPrefix(path, "~/") {
+			path = filepath.Join("$HOME", path[2:])
+		}
+		path = os.ExpandEnv(path)
+		path, err := filepath.EvalSymlinks(path)
 		if err != nil {
 			return nil, err
 		}
-		stores[i].Path = finalPath
+		stores[i].Path = path
 	}
 
 	return &diskStore{stores, useFuzzy}, nil
@@ -93,7 +98,7 @@ func (s *diskStore) FuzzySearch(query string) ([]string, error) {
 
 func (s *diskStore) GlobSearch(query string) ([]string, error) {
 	// Search:
-	// 	1. DOMAIN/USERNAME.gpg
+	//	1. DOMAIN/USERNAME.gpg
 	//	2. DOMAIN.gpg
 	//	3. DOMAIN/SUBDIRECTORY/USERNAME.gpg
 
@@ -140,13 +145,13 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 }
 
 func (s *diskStore) Open(item string) (io.ReadCloser, error) {
-	parts := strings.SplitN(item, ":", 2);
+	parts := strings.SplitN(item, ":", 2)
 
 	for _, store := range s.Stores {
-		if (store.Name != parts[0]) {
-			continue;
+		if store.Name != parts[0] {
+			continue
 		}
-		path := filepath.Join(store.Path, parts[1] + ".gpg")
+		path := filepath.Join(store.Path, parts[1]+".gpg")
 		f, err := os.Open(path)
 		if os.IsNotExist(err) {
 			continue
