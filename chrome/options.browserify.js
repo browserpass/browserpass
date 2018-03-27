@@ -9,7 +9,7 @@ var settings = {
     title: "Use fuzzy search",
     value: true
   },
-  customStore: {
+  customStores: {
     title: "Custom password store locations",
     value: [],
   }
@@ -27,13 +27,13 @@ var tree = {
       }
     }
     nodes.push(m("h3", "Custom Store Locations"));
-    for (var key in settings.customStore.value) {
-      nodes.push(createCustomStore(key, settings.customStore.value[key]));
+    for (var key in settings.customStores.value) {
+      nodes.push(createCustomStore(key, settings.customStores.value[key]));
     }
     nodes.push(m("button.add-store", {
       onclick: function() {
-        settings.customStore.value.push({enabled: true, name: "", path: ""});
-        saveSetting("customStore");
+        settings.customStores.value.push({enabled: true, name: "", path: ""});
+        saveSetting("customStores");
       }
     }, "Add Store"));
     return nodes;
@@ -88,7 +88,7 @@ function createCustomStore(key, store) {
       checked: store.enabled,
       onchange: function(e) {
         store.enabled = e.target.checked;
-        saveSetting("customStore");
+        saveSetting("customStores");
       }
     }),
     m("input[type=text].name", {
@@ -97,7 +97,7 @@ function createCustomStore(key, store) {
       placeholder: "name",
       onchange: function(e) {
         store.name = e.target.value;
-        saveSetting("customStore");
+        saveSetting("customStores");
       }
     }),
     m("input[type=text].path", {
@@ -106,14 +106,14 @@ function createCustomStore(key, store) {
       placeholder: "/path/to/store",
       onchange: function(e) {
         store.path = e.target.value;
-        saveSetting("customStore");
+        saveSetting("customStores");
       }
     }),
     m("a.remove", {
       title: "Remove this password store",
       onclick: function() {
-        delete settings.customStore.value[key];
-        saveSetting("customStore");
+        delete settings.customStores.value[key];
+        saveSetting("customStores");
       }
     }, "[X]")
   ]);

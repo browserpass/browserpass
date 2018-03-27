@@ -118,7 +118,7 @@ function getSettings() {
   var settings = {
     autoSubmit: false,
     use_fuzzy_search: true,
-    customStore: []
+    customStores: []
   };
 
   // load settings from local storage
@@ -130,7 +130,7 @@ function getSettings() {
   }
 
   // filter custom stores by enabled & path length, and ensure they are named
-  settings.customStore = settings.customStore
+  settings.customStores = settings.customStores
     .filter(store => store.enabled && store.path.length > 0)
     .map(function(store) {
       if (!store.name) {

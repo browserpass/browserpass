@@ -37,8 +37,8 @@ var endianness = binary.LittleEndian
 // Config defines the root config structure sent from the browser extension
 type Config struct {
 	// Manual searches use FuzzySearch if true, GlobSearch otherwise
-	UseFuzzy    bool                   `json:"use_fuzzy_search"`
-	CustomStore []pass.StoreDefinition `json:"customStore"`
+	UseFuzzy    bool                    `json:"use_fuzzy_search"`
+	CustomStores []pass.StoreDefinition `json:"customStores"`
 }
 
 // msg defines a message sent from a browser extension.
@@ -80,7 +80,7 @@ func Run(stdin io.Reader, stdout io.Writer) error {
 			return SendError(err, stdout)
 		}
 
-		s, err := pass.NewDefaultStore(data.Settings.CustomStore, data.Settings.UseFuzzy)
+		s, err := pass.NewDefaultStore(data.Settings.CustomStores, data.Settings.UseFuzzy)
 		if err != nil {
 			return SendError(err, stdout)
 		}
