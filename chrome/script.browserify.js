@@ -290,7 +290,8 @@ function launchURL() {
         }
         // get url from login path if not available in the host app response
         if (!response.hasOwnProperty("url") || response.url.length == 0) {
-          var parts = entry.split(/\//).reverse();
+          var parts = (entry.indexOf(":") > 0) ? entry.substr(entry.indexOf(":") + 1) : entry;
+          parts = parts.split(/\//).reverse();
           for (var i in parts) {
             var part = parts[i];
             var info = Tldjs.parse(part);
