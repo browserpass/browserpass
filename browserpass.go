@@ -49,6 +49,18 @@ type msg struct {
 	Entry    string `json:"entry"`
 }
 
+func SendError(err error, stdout io.Writer) error {
+	var buf bytes.Buffer
+	if writeError := json.NewEncoder(&buf).Encode(err.Error()); writeError != nil {
+		return err
+	}
+	if writeError := binary.Write(stdout, endianness, uint32(buf.Len())); writeError != nil {
+		return err
+	}
+	buf.WriteTo(stdout)
+	return err
+}
+
 // Run starts browserpass.
 func Run(stdin io.Reader, stdout io.Writer) error {
 	protector.Protect("stdio rpath proc exec")
@@ -58,19 +70,19 @@ func Run(stdin io.Reader, stdout io.Writer) error {
 		if err := binary.Read(stdin, endianness, &n); err == io.EOF {
 			return nil
 		} else if err != nil {
-			return err
+			return SendError(err, stdout)
 		}
 
 		// Get message body
 		var data msg
 		lr := &io.LimitedReader{R: stdin, N: int64(n)}
 		if err := json.NewDecoder(lr).Decode(&data); err != nil {
-			return err
+			return SendError(err, stdout)
 		}
 
 		s, err := pass.NewDefaultStore(data.Settings.CustomStore, data.Settings.UseFuzzy)
 		if err != nil {
-			return err
+			return SendError(err, stdout)
 		}
 
 		var resp interface{}
@@ -78,36 +90,36 @@ func Run(stdin io.Reader, stdout io.Writer) error {
 		case "search":
 			list, err := s.Search(data.Domain)
 			if err != nil {
-				return err
+				return SendError(err, stdout)
 			}
 			resp = list
 		case "match_domain":
 			list, err := s.GlobSearch(data.Domain)
 			if err != nil {
-				return err
+				return SendError(err, stdout)
 			}
 			resp = list
 		case "get":
 			rc, err := s.Open(data.Entry)
 			if err != nil {
-				return err
+				return SendError(err, stdout)
 			}
 			defer rc.Close()
 			login, err := readLoginGPG(rc)
 			if err != nil {
-				return err
+				return SendError(err, stdout)
 			}
 			if login.Username == "" {
 				login.Username = guessUsername(data.Entry)
 			}
 			resp = login
 		default:
-			return errors.New("Invalid action")
+			return SendError(errors.New("Invalid action"), stdout)
 		}
 
 		var b bytes.Buffer
 		if err := json.NewEncoder(&b).Encode(resp); err != nil {
-			return err
+			return SendError(err, stdout)
 		}
 
 		if err := binary.Write(stdout, endianness, uint32(b.Len())); err != nil {

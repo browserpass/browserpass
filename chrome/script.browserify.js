@@ -226,6 +226,13 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
         }
 
         searching = false;
+
+        if (typeof(response) == "string") {
+          error = response;
+          m.redraw();
+          return;
+        }
+
         logins = resultLogins = response ? response : [];
         document.getElementById("filter-search").textContent = domain;
         fillOnSubmit = useFillOnSubmit && logins.length > 0;
