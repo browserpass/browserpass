@@ -11,7 +11,7 @@ var settings = {
   },
   customStores: {
     title: "Custom password store locations",
-    value: [],
+    value: [{enabled: true, name: "", path: ""}],
   }
 };
 
