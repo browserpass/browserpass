@@ -11,6 +11,7 @@ var logins = [];
 var fillOnSubmit = false;
 var error;
 var domain, urlDuringSearch;
+var searchSettings;
 
 m.mount(document.getElementById("mount"), { view: view, oncreate: oncreate });
 
@@ -34,12 +35,11 @@ function view() {
         m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
       );
     } else if (logins.length > 0) {
-      const autoSubmit = localStorage.getItem("autoSubmit") == "true";
       results = logins.map(function(login) {
         let selector = "button.login";
         let options = {
           onclick: getLoginData.bind(login),
-          title: "Fill form" + (autoSubmit ? " and submit" : "")
+          title: "Fill form" + (searchSettings.autoSubmit ? " and submit" : "")
         };
 
 	var store = "default";
@@ -223,6 +223,7 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   // to the settings). Then construct the message to send to browserpass and
   // send that via sendNativeMessage.
   chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
+    searchSettings = settings;
     chrome.runtime.sendNativeMessage(
       app,
       { action: action, domain: _domain, settings: settings },
