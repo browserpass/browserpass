@@ -114,11 +114,33 @@ function onMessage(request, sender, sendResponse) {
 }
 
 function getSettings() {
-  const use_fuzzy_search = localStorage.getItem("use_fuzzy_search") != "false";
-  const paths = JSON.parse(localStorage.getItem("paths") || "[]")
-    .filter(path => path.enabled)
-    .map(path => path.path);
-  return { paths: paths, use_fuzzy_search: use_fuzzy_search };
+  // default settings
+  var settings = {
+    autoSubmit: false,
+    use_fuzzy_search: true,
+    customStore: []
+  };
+
+  // load settings from local storage
+  for (var key in settings) {
+    var value = localStorage.getItem(key);
+    if (value !== null) {
+      settings[key] = JSON.parse(value);
+    }
+  }
+
+  // filter custom stores by enabled & path length, and ensure they are named
+  settings.customStore = settings.customStore
+    .filter(store => store.enabled && store.path.length > 0)
+    .map(function(store) {
+      if (!store.name) {
+        store.name = store.path;
+      }
+      return store;
+    })
+    ;
+
+  return settings;
 }
 
 // listener function for authentication interception
