@@ -226,3 +226,33 @@ func TestFuzzySearchTopLevelEntries(t *testing.T) {
 		}
 	}
 }
+
+func TestGlobSearchMultipleStores(t *testing.T) {
+	store := diskStore{stores: []StoreDefinition{StoreDefinition{Name: "default", Path: "test_store"}, StoreDefinition{Name: "custom", Path: "test_store_2"}}, useFuzzy: false}
+	searchResults, err := store.Search("abc.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResults) != 2 {
+		t.Fatalf("Found %v results instead of 2", len(searchResults))
+	}
+	expectedResults := []string{"custom:abc.com", "default:abc.com"}
+	if searchResults[0] != expectedResults[0] || searchResults[1] != expectedResults[1] {
+		t.Fatalf("Couldn't find %v, found %v instead", expectedResults, searchResults)
+	}
+}
+
+func TestFuzzySearchMultipleStores(t *testing.T) {
+	store := diskStore{stores: []StoreDefinition{StoreDefinition{Name: "default", Path: "test_store"}, StoreDefinition{Name: "custom", Path: "test_store_2"}}, useFuzzy: true}
+	searchResults, err := store.Search("abc.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(searchResults) != 2 {
+		t.Fatalf("Found %v results instead of 2", len(searchResults))
+	}
+	expectedResults := []string{"default:abc.com", "custom:abc.com"}
+	if searchResults[0] != expectedResults[0] || searchResults[1] != expectedResults[1] {
+		t.Fatalf("Couldn't find %v, found %v instead", expectedResults, searchResults)
+	}
+}

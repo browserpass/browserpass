@@ -20,7 +20,7 @@ endif
 
 .PHONY: prettier
 prettier:
-	"$(PRETTIER)" --write $(PRETTIER_SOURCES)
+	$(PRETTIER) --write $(PRETTIER_SOURCES)
 
 .PHONY: js
 js: $(JS_OUTPUT)
