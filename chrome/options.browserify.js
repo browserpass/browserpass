@@ -21,14 +21,14 @@ loadSettings();
 var tree = {
   view: function() {
     var nodes = [m("h3", "Basic Settings")];
-    for (key in settings) {
+    for (var key in settings) {
       var type = settings[key].type;
       if (type == "checkbox") {
         nodes.push(createCheckbox(key, settings[key]));
       }
     }
     nodes.push(m("h3", "Custom Store Locations"));
-    for (key in settings.customStore.value) {
+    for (var key in settings.customStore.value) {
       nodes.push(createCustomStore(key, settings.customStore.value[key]));
     }
     nodes.push(m("a", {
@@ -47,7 +47,7 @@ m.mount(document.body, tree);
 
 // load settings from local storage
 function loadSettings() {
-  for (key in settings) {
+  for (var key in settings) {
     var value = localStorage.getItem(key);
     if (value !== null) {
       settings[key].value = JSON.parse(value);
