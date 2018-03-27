@@ -151,7 +151,6 @@ func (s *diskStore) Open(item string) (io.ReadCloser, error) {
 		if os.IsNotExist(err) {
 			continue
 		}
-		// TODO this does not handle identical file names in multiple s.paths
 		return f, err
 	}
 	return nil, errors.New("Unable to find the item on disk")
