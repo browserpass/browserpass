@@ -46,7 +46,9 @@ function view() {
 	var name = login;
 	var i;
 	if (i = login.indexOf(':')) {
-	  store = login.substr(0, i);
+          if (searchSettings.customStore.length > 1) {
+            store = login.substr(0, i);
+          }
 	  name = login.substr(++i);
 	}
 
