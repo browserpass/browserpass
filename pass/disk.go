@@ -21,7 +21,7 @@ type StoreDefinition struct {
 }
 
 type diskStore struct {
-	Stores   []StoreDefinition
+	stores   []StoreDefinition
 	useFuzzy bool // Setting for FuzzySearch or GlobSearch in manual searches
 }
 
@@ -79,21 +79,27 @@ func (s *diskStore) Search(query string) ([]string, error) {
 // for the empty string, then apply appropriate logic to convert results to
 // a slice of strings, finally returning all of the unique entries.
 func (s *diskStore) FuzzySearch(query string) ([]string, error) {
-	var items []string
-	fileList, err := s.GlobSearch("")
+	entries, err := s.GlobSearch("")
 	if err != nil {
 		return nil, err
+	}
+
+	// GlobSearch now results `storename:filename`, for fuzzy search we need to provide only file names
+	var fileNames []string
+	for _, entry := range entries {
+		fileNames = append(fileNames, strings.SplitN(entry, ":", 2)[1])
 	}
 
 	// The resulting match struct does not copy the strings, but rather
 	// provides the index to the original array. Copy those strings
 	// into the result slice
-	matches := sfuzzy.Find(query, fileList)
+	var results []string
+	matches := sfuzzy.Find(query, fileNames)
 	for _, match := range matches {
-		items = append(items, fileList[match.Index])
+		results = append(results, entries[match.Index])
 	}
 
-	return items, nil
+	return results, nil
 }
 
 func (s *diskStore) GlobSearch(query string) ([]string, error) {
@@ -104,7 +110,7 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 
 	items := []string{}
 
-	for _, store := range s.Stores {
+	for _, store := range s.stores {
 		matches, err := zglob.GlobFollowSymlinks(store.Path + "/**/" + query + "*/**/*.gpg")
 		if err != nil {
 			return nil, err
@@ -147,7 +153,7 @@ func (s *diskStore) GlobSearch(query string) ([]string, error) {
 func (s *diskStore) Open(item string) (io.ReadCloser, error) {
 	parts := strings.SplitN(item, ":", 2)
 
-	for _, store := range s.Stores {
+	for _, store := range s.stores {
 		if store.Name != parts[0] {
 			continue
 		}
