@@ -7,6 +7,18 @@ Browserpass is a Chrome & Firefox extension for [zx2c4's pass](https://www.passw
 
 It uses a [native binary written in Golang](https://github.com/dannyvankooten/browserpass/blob/master/browserpass.go) to do the interfacing with your password store. Secure communication between the binary and the browser extension is handled through [native messaging](https://developer.chrome.com/extensions/nativeMessaging).
 
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Options](#options)
+- [Security](#security)
+- [FAQ](#faq)
+- [Contribute](#contributing)
+- [License](#license)
+
+
 ## Requirements
 
 - A recent version of Chrome, Chromium or Firefox 50+.
