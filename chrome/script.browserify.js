@@ -12,11 +12,16 @@ var error;
 var domain, urlDuringSearch;
 var searchSettings;
 
-m.mount(document.getElementById("mount"), { view: view, oncreate: oncreate });
+// load settings and initialise popup
+chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
+    searchSettings = settings;
 
-chrome.tabs.onActivated.addListener(init);
-chrome.tabs.query({ lastFocusedWindow: true, active: true }, function(tabs) {
-  init(tabs[0]);
+    m.mount(document.getElementById("mount"), { view: view, oncreate: oncreate });
+
+    chrome.tabs.onActivated.addListener(init);
+    chrome.tabs.query({ lastFocusedWindow: true, active: true }, function(tabs) {
+        init(tabs[0]);
+    });
 });
 
 function view() {
