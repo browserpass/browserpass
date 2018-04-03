@@ -49,11 +49,18 @@ function view() {
         };
 
         var store = "default";
+        var storeTitle = "Default password store";
         var name = login;
         var i;
         if ((i = login.indexOf(":"))) {
           if (searchSettings && searchSettings.customStores.length > 1) {
             store = login.substr(0, i);
+            searchSettings.customStores.map(function(customStore) {
+              if (customStore.name != store) {
+                return;
+              }
+              storeTitle = customStore.path;
+            });
           }
           name = login.substr(++i);
         }
@@ -66,7 +73,7 @@ function view() {
 
         return m("div.entry", [
           m(selector, options, [
-            i > 0 && store != "default" ? m("div.store", store) : null,
+            i > 0 && store != "default" ? m("div.store", {title: storeTitle}, store) : null,
             m("div.name", name)
           ]),
           m("button.launch.url", {
