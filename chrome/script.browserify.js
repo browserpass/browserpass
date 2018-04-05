@@ -176,7 +176,7 @@ function searchKeyHandler(e) {
     e.target.value.length == 0
   ) {
     e.preventDefault();
-    e.target.value = fillOnSubmit ? "" : domain;
+    e.target.value = (fillOnSubmit || domain == "*") ? "" : domain;
     if (searchSettings.filterEverything && domain != "*") {
       searchPassword('*', "match_domain");
       domain = "*";
