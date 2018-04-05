@@ -5,7 +5,10 @@ body {
   min-width: 350px;
   background: white;
   font-size: 14px;
-  overflow-y: hidden;
+}
+
+.container {
+  max-height: 300px;
 }
 
 .search > form {
@@ -51,6 +54,8 @@ body {
 .results {
   width: 100%;
   min-width: 160px;
+  max-height: inherit;
+  overflow-y: auto;
 }
 
 .entry {
