@@ -234,6 +234,7 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   if (!_domain.length || ignore.indexOf(_domain) >= 0) {
     if (searchSettings.filterEverything) {
       searchPassword("*", "match_domain");
+      domain = "*";
     }
     return;
   }
