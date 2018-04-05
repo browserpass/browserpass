@@ -176,7 +176,7 @@ function searchKeyHandler(e) {
     e.target.value.length == 0
   ) {
     e.preventDefault();
-    e.target.value = (fillOnSubmit || domain == "*") ? "" : domain;
+    e.target.value = fillOnSubmit ? "" : domain;
     if (searchSettings.filterEverything && domain != "*") {
       searchPassword('*', "match_domain");
       domain = "*";
@@ -233,7 +233,7 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   var ignore = ["newtab", "extensions"];
   if (!_domain.length || ignore.indexOf(_domain) >= 0) {
     if (searchSettings.filterEverything) {
-      searchPassword("*", "match_domain");
+      searchPassword("*", "match_domain", false);
       domain = "*";
     }
     return;
@@ -267,12 +267,12 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
 
         logins = resultLogins = response ? response : [];
         document.getElementById("filter-search").textContent = domain;
-        fillOnSubmit = useFillOnSubmit && logins.length > 0 && domain != "*";
+        fillOnSubmit = useFillOnSubmit && logins.length > 0;
         if (logins.length > 0) {
           showFilterHint(true);
           document.getElementById("search-field").value = "";
         } else {
-	  searchPassword("*", "match_domain");
+	  searchPassword("*", "match_domain", false);
 	}
         m.redraw();
       }
