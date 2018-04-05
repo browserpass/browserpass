@@ -36,7 +36,7 @@ function view() {
     if (logins.length === 0 && domain && domain.length > 0) {
       results = m(
         "div.status-text",
-        m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
+        m.trust(`No matching passwords found` + (domain == "*" ? `.` : ` for <strong>${domain}</strong>.`))
       );
     } else if (logins.length > 0) {
       results = logins.map(function(login) {
@@ -176,10 +176,14 @@ function searchKeyHandler(e) {
     e.target.value.length == 0
   ) {
     e.preventDefault();
-    logins = resultLogins = [];
     e.target.value = fillOnSubmit ? "" : domain;
-    domain = "";
-    showFilterHint(false);
+    if (searchSettings.filterEverything && domain != "*") {
+      searchPassword('*', "match_domain");
+    } else {
+      showFilterHint(false);
+      logins = resultLogins = [];
+      domain = "";
+    }
   }
 }
 
@@ -227,6 +231,9 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   _domain = _domain.trim();
   var ignore = ["newtab", "extensions"];
   if (!_domain.length || ignore.indexOf(_domain) >= 0) {
+    if (searchSettings.filterEverything) {
+      searchPassword("*", "match_domain", false);
+    }
     return;
   }
 
@@ -262,7 +269,9 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
         if (logins.length > 0) {
           showFilterHint(true);
           document.getElementById("search-field").value = "";
-        }
+        } else if (searchSettings.filterEverything && domain == parseDomainFromUrl(activeTab.url)) {
+	  searchPassword("*", "match_domain", false);
+	}
         m.redraw();
       }
     );
