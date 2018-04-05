@@ -19,11 +19,13 @@ import (
 
 // Login represents a single pass login.
 type Login struct {
-	Username string `json:"u"`
-	Password string `json:"p"`
-	OTP      string `json:"digits"`
-	OTPLabel string `json:"label"`
-	URL      string `json:"url"`
+	Username   string `json:"u"`
+	Password   string `json:"p"`
+	OTP        string `json:"digits"`
+	OTPLabel   string `json:"label"`
+	URL        string `json:"url"`
+	ASOverride bool   `json:"asOverride"`
+	AutoSubmit bool   `json:"autoSubmit"`
 }
 
 var endianness = binary.LittleEndian
@@ -231,6 +233,7 @@ func parseLogin(r io.Reader) (*Login, error) {
 	// Keep reading file for string in "login:", "username:" or "user:" format (case insensitive).
 	userPattern := regexp.MustCompile("(?i)^(login|username|user):")
 	urlPattern := regexp.MustCompile("(?i)^(url|link|website|web|site):")
+	asPattern := regexp.MustCompile("(?i)^autosubmit:")
 	for scanner.Scan() {
 		line := scanner.Text()
 		parseTotp(line, login)
@@ -242,6 +245,16 @@ func parseLogin(r io.Reader) (*Login, error) {
 			replaced = urlPattern.ReplaceAllString(line, "")
 			if len(replaced) != len(line) {
 				login.URL = strings.TrimSpace(replaced)
+			}
+		}
+		replaced = asPattern.ReplaceAllString(line, "")
+		if len(replaced) != len(line) {
+			login.ASOverride = true;
+			asString := strings.TrimSpace(replaced);
+			if (asString == "true") {
+				login.AutoSubmit = true;
+			} else {
+				login.AutoSubmit = false;
 			}
 		}
 	}

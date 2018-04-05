@@ -12,7 +12,7 @@ chrome.tabs.onUpdated.addListener(onTabUpdated);
 chrome.runtime.onInstalled.addListener(onExtensionInstalled);
 
 // fill login form & submit
-function fillLoginForm(login, tab) {
+function fillLoginForm(login, tab, autoSubmit) {
   const loginParam = JSON.stringify(login);
   chrome.tabs.executeScript(
     tab.id,
@@ -23,7 +23,7 @@ function fillLoginForm(login, tab) {
     function() {
       chrome.tabs.executeScript({
         allFrames: true,
-        code: `browserpassFillForm(${loginParam}, ${getSettings().autoSubmit});`
+        code: `browserpassFillForm(${loginParam}, ${autoSubmit});`
       });
     }
   );
@@ -76,7 +76,8 @@ function onMessage(request, sender, sendResponse) {
           ) {
             // do not send login data to page if URL changed during search.
             if (tabs[0].url == request.urlDuringSearch) {
-              fillLoginForm(response, tabs[0]);
+              var autoSubmit = response.asOverride ? response.autoSubmit : getSettings().autoSubmit;
+              fillLoginForm(response, tabs[0], autoSubmit);
             }
           });
 
