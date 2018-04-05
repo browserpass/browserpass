@@ -179,7 +179,6 @@ function searchKeyHandler(e) {
     e.target.value = fillOnSubmit ? "" : domain;
     if (searchSettings.filterEverything && domain != "*") {
       searchPassword('*', "match_domain");
-      domain = "*";
     } else {
       showFilterHint(false);
       logins = resultLogins = [];
@@ -234,7 +233,6 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   if (!_domain.length || ignore.indexOf(_domain) >= 0) {
     if (searchSettings.filterEverything) {
       searchPassword("*", "match_domain", false);
-      domain = "*";
     }
     return;
   }
