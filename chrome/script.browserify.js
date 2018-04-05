@@ -36,7 +36,7 @@ function view() {
     if (logins.length === 0 && domain && domain.length > 0) {
       results = m(
         "div.status-text",
-        m.trust(`No matching passwords found for <strong>${domain}</strong>.`)
+        m.trust(`No matching passwords found` + (domain == "*" ? `.` : ` for <strong>${domain}</strong>.`))
       );
     } else if (logins.length > 0) {
       results = logins.map(function(login) {
