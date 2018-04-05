@@ -176,10 +176,15 @@ function searchKeyHandler(e) {
     e.target.value.length == 0
   ) {
     e.preventDefault();
-    logins = resultLogins = [];
     e.target.value = fillOnSubmit ? "" : domain;
-    domain = "";
-    showFilterHint(false);
+    if (searchSettings.filterEverything && domain != "*") {
+      searchPassword('*', "match_domain");
+      domain = "*";
+    } else {
+      showFilterHint(false);
+      logins = resultLogins = [];
+      domain = "";
+    }
   }
 }
 
@@ -227,6 +232,9 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
   _domain = _domain.trim();
   var ignore = ["newtab", "extensions"];
   if (!_domain.length || ignore.indexOf(_domain) >= 0) {
+    if (searchSettings.filterEverything) {
+      searchPassword("*", "match_domain");
+    }
     return;
   }
 

@@ -9,6 +9,11 @@ var settings = {
     title: "Use fuzzy search",
     value: true
   },
+  filterEverything: {
+    type: "checkbox",
+    title: "Filter all available entries",
+    value: false
+  },
   customStores: {
     title: "Custom password store locations",
     value: [{ enabled: true, name: "", path: "" }]

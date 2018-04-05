@@ -247,6 +247,7 @@ function getSettings() {
   var settings = {
     autoSubmit: false,
     use_fuzzy_search: true,
+    filterEverything: false,
     customStores: []
   };
 
