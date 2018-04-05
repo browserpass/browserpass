@@ -76,7 +76,7 @@ function onMessage(request, sender, sendResponse) {
           ) {
             // do not send login data to page if URL changed during search.
             if (tabs[0].url == request.urlDuringSearch) {
-              var autoSubmit = response.asOverride ? response.autoSubmit : getSettings().autoSubmit;
+              var autoSubmit = response.hasOwnProperty('autoSubmit') ? response.autoSubmit : getSettings().autoSubmit;
               fillLoginForm(response, tabs[0], autoSubmit);
             }
           });
