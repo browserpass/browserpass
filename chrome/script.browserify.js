@@ -271,7 +271,7 @@ function searchPassword(_domain, action = "search", useFillOnSubmit = true) {
         if (logins.length > 0) {
           showFilterHint(true);
           document.getElementById("search-field").value = "";
-        } else {
+        } else if (domain == parseDomainFromUrl(activeTab.url)) {
 	  searchPassword("*", "match_domain", false);
 	}
         m.redraw();
