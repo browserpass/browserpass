@@ -38,7 +38,7 @@ var endianness = binary.LittleEndian
 // Config defines the root config structure sent from the browser extension
 type Config struct {
 	// Manual searches use FuzzySearch if true, GlobSearch otherwise
-	UseFuzzy    bool                    `json:"use_fuzzy_search"`
+	UseFuzzy     bool                   `json:"use_fuzzy_search"`
 	CustomStores []pass.StoreDefinition `json:"customStores"`
 }
 
@@ -232,29 +232,29 @@ func parseLogin(r io.Reader) (*Login, error) {
 	// Keep reading file for string in "login:", "username:" or "user:" format (case insensitive).
 	userPattern := regexp.MustCompile("(?i)^(login|username|user):")
 	urlPattern := regexp.MustCompile("(?i)^(url|link|website|web|site):")
-	asPattern := regexp.MustCompile("(?i)^autosubmit:")
+	autoSubmitPattern := regexp.MustCompile("(?i)^autosubmit:")
 	for scanner.Scan() {
 		line := scanner.Text()
-		parseTotp(line, login)
-		replaced := userPattern.ReplaceAllString(line, "")
-		if len(replaced) != len(line) {
-			login.Username = strings.TrimSpace(replaced)
+		if login.OTP == "" {
+			parseTotp(line, login)
+		}
+		if login.Username == "" {
+			replaced := userPattern.ReplaceAllString(line, "")
+			if len(replaced) != len(line) {
+				login.Username = strings.TrimSpace(replaced)
+			}
 		}
 		if login.URL == "" {
-			replaced = urlPattern.ReplaceAllString(line, "")
+			replaced := urlPattern.ReplaceAllString(line, "")
 			if len(replaced) != len(line) {
 				login.URL = strings.TrimSpace(replaced)
 			}
 		}
-		replaced = asPattern.ReplaceAllString(line, "")
-		if len(replaced) != len(line) {
-			asString := strings.TrimSpace(replaced);
-			var autoSubmit bool;
-			login.AutoSubmit = &autoSubmit;
-			if (asString == "true") {
-				autoSubmit = true;
-			} else {
-				autoSubmit = false;
+		if login.AutoSubmit == nil {
+			replaced := autoSubmitPattern.ReplaceAllString(line, "")
+			if len(replaced) != len(line) {
+				value := strings.ToLower(strings.TrimSpace(replaced)) == "true"
+				login.AutoSubmit = &value
 			}
 		}
 	}
