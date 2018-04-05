@@ -24,7 +24,7 @@ type Login struct {
 	OTP        string `json:"digits"`
 	OTPLabel   string `json:"label"`
 	URL        string `json:"url"`
-	AutoSubmit bool   `json:"autoSubmit,omitempty"`
+	AutoSubmit *bool  `json:"autoSubmit,omitempty"`
 }
 
 var endianness = binary.LittleEndian
@@ -249,10 +249,12 @@ func parseLogin(r io.Reader) (*Login, error) {
 		replaced = asPattern.ReplaceAllString(line, "")
 		if len(replaced) != len(line) {
 			asString := strings.TrimSpace(replaced);
+			var autoSubmit bool;
+			login.AutoSubmit = &autoSubmit;
 			if (asString == "true") {
-				login.AutoSubmit = true;
+				autoSubmit = true;
 			} else {
-				login.AutoSubmit = false;
+				autoSubmit = false;
 			}
 		}
 	}
