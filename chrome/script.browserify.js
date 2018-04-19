@@ -93,6 +93,11 @@ function view() {
             onclick: loginToClipboard.bind({ entry: login, what: "password" }),
             title: "Copy password",
             tabindex: -1
+          }),
+          m("button.copy.otp", {
+              onclick: loginToClipboard.bind({ entry: login, what: "otp" }),
+              title: "Copy OTP",
+              tabindex: -1
           })
         ]);
       });

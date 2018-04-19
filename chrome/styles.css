@@ -82,6 +82,11 @@ body {
   background-size: 16px 16px;
 }
 
+.otp {
+  background: no-repeat url('icon-otp.svg') center;
+  background-size: 16px 16px;
+}
+
 .login {
   display: flex;
   flex: 1;

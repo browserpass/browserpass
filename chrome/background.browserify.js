@@ -112,6 +112,8 @@ function onMessage(request, sender, sendResponse) {
             text = response.p;
           } else if (request.what === "username") {
             text = response.u;
+          } else if (request.what === "otp") {
+            text = response.digits;
           }
 
           try {
