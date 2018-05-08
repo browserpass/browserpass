@@ -64,7 +64,7 @@ func SendError(err error, stdout io.Writer) error {
 
 // Run starts browserpass.
 func Run(stdin io.Reader, stdout io.Writer) error {
-	protector.Protect("stdio rpath proc exec")
+	protector.Protect("stdio rpath proc exec getpw")
 	for {
 		// Get message length, 4 bytes
 		var n uint32
