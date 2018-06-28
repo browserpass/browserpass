@@ -1,0 +1,72 @@
+body {
+  background-color: #0c0c0d;
+}
+
+.search input {
+  color: #f3fbff;
+  background: url("icon-search-dark.svg") center right 6px no-repeat;
+  background-size: 16px 16px;
+  background-color: #474749;
+}
+
+.search > form {
+  border-bottom: 1px solid #6e6e71;
+}
+
+#filter-search {
+  color: #f3fbff;
+  background: #323234;
+}
+
+.entry {
+  color: #f3fbff;
+  background-color: #323234;
+  border-bottom: 1px dotted #6e6e71;
+}
+
+.entry > *:hover,
+.entry > *:focus {
+  background-color: #666667;
+}
+
+.login {
+  background-color: #323234;
+  color: #f3fbff;
+}
+
+.url, .username, .password, .otp {
+  color: #f3fbff;
+  background-color: #323234;
+}
+
+.url {
+  background: url("icon-globe-dark.svg") center right 6px no-repeat;
+  background-size: 16px 16px;
+}
+
+.username {
+  background: url("icon-user-dark.svg") center right 6px no-repeat;
+  background-size: 16px 16px;
+}
+
+.password {
+  background: url("icon-key-dark.svg") center right 6px no-repeat;
+  background-size: 16px 16px;
+}
+
+.otp {
+  background: url("icon-otp-dark.svg") center right 6px no-repeat;
+  background-size: 16px 16px;
+}
+
+.login .store {
+  background-color: #45a1ff;
+}
+
+.loader {
+  border: 3px solid rgba(243, 251, 255, 0.2);
+  border-left-color: #f3fbff;
+}
+.status-text {
+  color: #f3fbff;
+}

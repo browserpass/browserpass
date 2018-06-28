@@ -16,6 +16,16 @@ var searchSettings;
 chrome.runtime.sendMessage({ action: "getSettings" }, function(settings) {
   searchSettings = settings;
 
+  console.log(searchSettings);
+  console.log("test");
+  if (searchSettings && searchSettings.use_dark_theme) {
+    var link = document.createElement("link");
+    link.href = "dark-theme.css";
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    document.getElementsByTagName("head")[0].appendChild(link);
+  }
+
   m.mount(document.getElementById("mount"), { view: view, oncreate: oncreate });
 
   chrome.tabs.onActivated.addListener(init);

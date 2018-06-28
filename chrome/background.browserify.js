@@ -259,6 +259,7 @@ function getSettings() {
   var settings = {
     autoSubmit: false,
     use_fuzzy_search: true,
+    use_dark_theme: false,
     customStores: []
   };
 

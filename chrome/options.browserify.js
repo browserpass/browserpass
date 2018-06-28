@@ -9,6 +9,11 @@ var settings = {
     title: "Use fuzzy search",
     value: true
   },
+  use_dark_theme: {
+    type: "checkbox",
+    title: "Use Dark Theme",
+    value: false
+  },
   customStores: {
     title: "Custom password store locations",
     value: [{ enabled: true, name: "", path: "" }]
