@@ -359,6 +359,16 @@ function keyHandler(e) {
     case "ArrowDown":
       switchFocus("div.entry:first-child > .login", "nextElementSibling");
       break;
+    case "ArrowRight":
+      if (document.activeElement.nextElementSibling) {
+        document.activeElement.nextElementSibling.focus();
+      }
+      break;
+    case "ArrowLeft":
+      if (document.activeElement.previousElementSibling) {
+        document.activeElement.previousElementSibling.focus();
+      }
+      break;
     case "c":
       if (e.target.id != "search-field" && e.ctrlKey) {
         document.activeElement.parentNode
