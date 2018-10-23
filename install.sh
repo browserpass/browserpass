@@ -30,11 +30,13 @@ Linux)
     TARGET_DIR_CHROMIUM="/etc/chromium/native-messaging-hosts"
     TARGET_DIR_FIREFOX="/usr/lib/mozilla/native-messaging-hosts"
     TARGET_DIR_VIVALDI="/etc/chromium/native-messaging-hosts"
+    TARGET_DIR_BRAVE="/etc/opt/chrome/native-messaging-hosts"
   else
     TARGET_DIR_CHROME="$HOME/.config/google-chrome/NativeMessagingHosts"
     TARGET_DIR_CHROMIUM="$HOME/.config/chromium/NativeMessagingHosts"
     TARGET_DIR_FIREFOX="$HOME/.mozilla/native-messaging-hosts"
     TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
+    TARGET_DIR_BRAVE="$HOME/.config/BraveSoftware/Brave-Browser-Beta/NativeMessagingHosts"
   fi
   ;;
 Darwin)
@@ -92,7 +94,8 @@ if [ -z "$BROWSER" ]; then
   echo "2) Chromium"
   echo "3) Firefox"
   echo "4) Vivaldi"
-  echo -n "1-4: "
+  echo "5) Brave"
+  echo -n "1-5: "
   read BROWSER
   echo ""
 fi
@@ -115,8 +118,12 @@ case $BROWSER in
   BROWSER_NAME="Vivaldi"
   TARGET_DIR="$TARGET_DIR_VIVALDI"
   ;;
+5|[Bb]rave)
+  BROWSER_NAME="Brave"
+  TARGET_DIR="$TARGET_DIR_BRAVE"
+  ;;
 *)
-  echo "Invalid selection. Please select 1-4 or one of the browser names."
+  echo "Invalid selection. Please select 1-5 or one of the browser names."
   exit 1
   ;;
 esac
