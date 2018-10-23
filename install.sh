@@ -46,11 +46,13 @@ Darwin)
     TARGET_DIR_CHROMIUM="/Library/Application Support/Chromium/NativeMessagingHosts"
     TARGET_DIR_FIREFOX="/Library/Application Support/Mozilla/NativeMessagingHosts"
     TARGET_DIR_VIVALDI="/Library/Application Support/Vivaldi/NativeMessagingHosts"
+    TARGET_DIR_BRAVE="/Library/Application Support/BraveSoftware/Brave-Browser-Beta/NativeMessagingHosts"
   else
     TARGET_DIR_CHROME="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
     TARGET_DIR_CHROMIUM="$HOME/Library/Application Support/Chromium/NativeMessagingHosts"
     TARGET_DIR_FIREFOX="$HOME/Library/Application Support/Mozilla/NativeMessagingHosts"
     TARGET_DIR_VIVALDI="$HOME/Library/Application Support/Vivaldi/NativeMessagingHosts"
+    TARGET_DIR_BRAVE="$HOME/Library/Application Support/BraveSoftware/Brave-Browser-Beta/NativeMessagingHosts"
   fi
   ;;
 OpenBSD)
@@ -63,6 +65,7 @@ OpenBSD)
   TARGET_DIR_CHROMIUM="$HOME/.config/chromium/NativeMessagingHosts"
   TARGET_DIR_FIREFOX="$HOME/.mozilla/native-messaging-hosts"
   TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
+  TARGET_DIR_BRAVE="$HOME/.config/BraveSoftware/Brave-Browser-Beta/NativeMessagingHosts"
   ;;
 FreeBSD)
   HOST_FILE="$BIN_DIR/browserpass-freebsd64"
@@ -74,6 +77,7 @@ FreeBSD)
   TARGET_DIR_CHROMIUM="$HOME/.config/chromium/NativeMessagingHosts"
   TARGET_DIR_FIREFOX="$HOME/.mozilla/native-messaging-hosts"
   TARGET_DIR_VIVALDI="$HOME/.config/vivaldi/NativeMessagingHosts"
+  TARGET_DIR_BRAVE="$HOME/.config/BraveSoftware/Brave-Browser-Beta/NativeMessagingHosts"
   ;;
 *)
   echo "$OPERATING_SYSTEM is not supported"
