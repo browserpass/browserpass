@@ -49,7 +49,9 @@ In order to install browserpass correctly, you have to install two of its compon
 The following OS have a browserpass package that can be installed via package manager:
 
 - [Arch Linux](https://aur.archlinux.org/packages/browserpass/)
+- [Debian GNU/Linux](https://tracker.debian.org/pkg/browserpass)
 - [NixOS](https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/security/browserpass/default.nix)
+- [Ubuntu](https://launchpad.net/ubuntu/+source/browserpass)
 
 If your OS is not listed above, proceed with the manual installation steps below.
 
