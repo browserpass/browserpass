@@ -48,7 +48,7 @@ The following OS have a browserpass package that can be installed via package ma
 
 - [Arch Linux](https://aur.archlinux.org/packages/browserpass/)
 - [Debian GNU/Linux](https://tracker.debian.org/pkg/browserpass)
-- [NixOS](https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/security/browserpass/default.nix)
+- [NixOS](https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/security/browserpass/default.nix) - make sure to read [these instructions](#configuring-browserpass-on-nixos--for-nix)
 - [Ubuntu](https://launchpad.net/ubuntu/+source/browserpass)
 
 If your OS is not listed above, proceed with the manual installation steps below.
@@ -238,6 +238,54 @@ $ gpgconf --kill gpg-agent
 And finally restart your browser.
 
 If you still experience the issue, try starting your browser from terminal. If this helps, the issue is likely due to the absence of `/usr/local/bin/gpg`, follow the steps above to make sure it exists.
+
+### Configuring Browserpass on NixOS / for Nix
+
+#### On NixOS
+
+If you wish to have a stateless setup, make sure you have this in your `/etc/nixos/configuration.nix` and rebuild your system:
+
+```nix
+{ pkgs, ... }: {
+  programs.browserpass.enable = true;
+  environment.systemPackages = with pkgs; [
+    # All of these browsers will work with it
+    chromium
+    firefox
+    google-chrome
+    vivaldi
+  ];
+}
+```
+
+Note: firefox*-bin versions do _not_ work statelessly. If you require such firefox versions, use the stateful setup in the following section.
+
+#### For Nix / stateful
+
+Install browserpass native messaging host with
+
+```
+nix-env -iA nixpkgs.browserpass
+```
+
+And install the browser extension like normal. Then link the necessary files
+
+```
+# For firefox
+mkdir -p ~/.mozilla/native-messaging-hosts && \
+  ln -s ~/.nix-profile/lib/mozilla/native-messaging-hosts/com.dannyvankooten.browserpass.json ~/.mozilla/native-messaging-hosts
+# For chrome
+mkdir -p ~/.config/google-chrome/NativeMessagingHosts && \
+  ln -s ~/.nix-profile/etc/chrome-host.json ~/.config/google-chrome/NativeMessagingHosts/com.dannyvankooten.browserpass.json
+# For chromium
+mkdir -p ~/.config/chromium/NativeMessagingHosts && \
+  ln -s ~/.nix-profile/etc/chrome-host.json ~/.config/chromium/NativeMessagingHosts/com.dannyvankooten.browserpass.json
+# For vivaldi
+mkdir -p ~/.config/vivaldi/NativeMessagingHosts && \
+  ln -s ~/.nix-profile/etc/chrome-host.json ~/.config/vivaldi/NativeMessagingHosts/com.dannyvankooten.browserpass.json
+```
+
+All versions of firefox are supported with this way
 
 ### How to configure OTP?
 
