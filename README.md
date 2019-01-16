@@ -48,6 +48,7 @@ The following OS have a browserpass package that can be installed via package ma
 
 - [Arch Linux](https://aur.archlinux.org/packages/browserpass/)
 - [Debian GNU/Linux](https://tracker.debian.org/pkg/browserpass)
+- [macOS](https://github.com/dustinwilson/homebrew-tap/blob/master/browserpass.rb) - make sure to read [these instructions](#installing-browserpass-on-macos-with-homebrew)
 - [NixOS](https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/security/browserpass/default.nix) - make sure to read [these instructions](#configuring-browserpass-on-nixos--for-nix)
 - [Ubuntu](https://launchpad.net/ubuntu/+source/browserpass)
 
@@ -286,6 +287,23 @@ mkdir -p ~/.config/vivaldi/NativeMessagingHosts && \
 ```
 
 All versions of firefox are supported with this way
+
+### Installing Browserpass on macOS with Homebrew
+
+Browserpass isn't included in the main Homebrew repository, so it must be installed by adding a third party "tap". That only requires one additional step.
+
+```
+$ brew tap dustinwilson/tap
+$ brew install browserpass
+```
+
+Instead of running `install.sh` Homebrew supplies an additional command called `browserpass-setup` to handle this and works the same way as `install.sh` above. For example this will install the native host files for Firefox:
+
+```
+$ browserpass-setup firefox
+```
+
+You must install the browser extensions manually using conventional methods for each browser. All of this information is supplied when running `brew install browserpass`.
 
 ### How to configure OTP?
 
